@@ -1,0 +1,6 @@
+{
+    "storage": "ELASTICSEARCH",
+    "ipc": "\\\\.\\pipe\\geth.ipc",
+    "os": "WINDOWS",
+    "index": "ethereum-ingest-1"
+}

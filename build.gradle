@@ -1,0 +1,72 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+project.version = "1.0.0-SNAPSHOT"
+project.group = 'com.codingchili.ethereumingest'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenLocal()
+    maven { url 'https://jitpack.io' }
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.github.codingchili.chili-core:core:1.0.6-SNAPSHOT'
+    compile 'org.web3j:core:2.3.1'
+}
+
+test {
+    testLogging {
+        exceptionFormat "full"
+    }
+    reports.html.enabled = false
+}
+
+task sourcesJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+jar {
+    zip64 true
+    from {
+        (configurations.runtime).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    manifest {
+        attributes 'Implementation-Title': 'ethereum-ingest',
+                'Implementation-Version': version,
+                'Main-Class': 'com.codingchili.ethereumingest.Service'
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.DSA', 'META-INF/*.SF'
+}
+
+task alljavadoc(type: Javadoc) {
+    source subprojects.collect { it.sourceSets.main.allJava }
+    classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+    destinationDir = file("${buildDir}/docs/javadoc")
+}
+
+task archiveJavadoc(type: Zip, dependsOn: alljavadoc) {
+    baseName = 'javadocs'
+    from fileTree(file("${buildDir}/docs/javadoc"))
+}
+
+task testReport(type: TestReport, dependsOn: 'build') {
+    destinationDir = file("$buildDir/reports/allTests")
+    reportOn subprojects*.test
+}
+
+task archiveTestReport(type: Zip, dependsOn: testReport) {
+    baseName = 'testreport'
+    from fileTree(file("$buildDir/reports/allTests"))
+}
