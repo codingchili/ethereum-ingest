@@ -11,6 +11,7 @@ Requires chili-core through jitpack or local repo.
 
 Start geth with rpc enabled
 ```
+
 geth --rpcapi personal,db,eth,net,web3 --rpc --testnet
 ```
 
