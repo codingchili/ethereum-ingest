@@ -1,4 +1,4 @@
-# ethereum-ingest
+# ethereum-ingest [![Build Status](https://travis-ci.org/codingchili/ethereum-ingest.svg?branch=master)](https://travis-ci.org/codingchili/ethereum-ingest)
 Ingests events from the Ethereum blockchain into ElasticSearch, MongoDB, Hazelcast, CQEngine and SQLite.
 
 In development; tested with ElasticSeach 5.6.2 and geth 1.7.1.
