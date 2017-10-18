@@ -1,6 +1,10 @@
 {
     "storage": "ELASTICSEARCH",
-    "ipc": "\\\\.\\pipe\\geth.ipc",
+    "ipc": "\\\\.\\pipe\\geth1.ipc",
     "os": "WINDOWS",
-    "index": "ethereum-ingest-1"
+    "blockIndex": "ether-block-demo",
+    "txIndex": "ether-tx-demo",
+    "txImport": true,
+    "startBlock": "1890000",
+    "backpressure": 9223372036854775807
 }

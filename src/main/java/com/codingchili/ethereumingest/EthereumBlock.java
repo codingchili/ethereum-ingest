@@ -7,6 +7,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import static com.codingchili.ethereumingest.ApplicationContext.timestampFrom;
+
 /**
  * Contains block data.
  */
@@ -17,6 +19,7 @@ public class EthereumBlock implements Storable {
     private String difficulty;
     private String author;
     private String miner;
+    private Integer txcount;
     private String timestamp;
 
     public EthereumBlock(EthBlock.Block block) {
@@ -25,14 +28,22 @@ public class EthereumBlock implements Storable {
         this.difficulty = block.getDifficultyRaw();
         this.author = block.getAuthor();
         this.miner = block.getMiner();
-        this.timestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(block.getTimestamp().intValue()),
-                ZoneId.systemDefault()).toOffsetDateTime().toString();
+        this.timestamp = timestampFrom(block.getTimestamp().longValue());
         this.size = block.getSize().longValue();
+        this.txcount = block.getTransactions().size();
     }
 
     @Override
     public String id() {
         return hash;
+    }
+
+    public Integer getTxcount() {
+        return txcount;
+    }
+
+    public void setTxcount(Integer txcount) {
+        this.txcount = txcount;
     }
 
     public String getHash() {

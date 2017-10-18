@@ -1,6 +1,7 @@
 package com.codingchili.ethereumingest;
 
 import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.files.Configurations;
 import com.codingchili.core.storage.ElasticMap;
 import com.codingchili.core.storage.HazelMap;
 import com.codingchili.core.storage.IndexedMapPersisted;
@@ -14,14 +15,26 @@ import static com.codingchili.ethereumingest.ApplicationConfig.StorageType.ELAST
  * Representation of configuration file.s
  */
 public class ApplicationConfig implements Configurable {
-    private String path = "application.config";
+    private static String path = "application.json";
+    private String startBlock = "0";
     private StorageType storage = ELASTICSEARCH;
     private String ipc = "\\\\.\\pipe\\geth.ipc";
     private OSType os = WINDOWS;
-    private String index = "ethereum-ingest";
+    private String txIndex = "eth-tx";
+    private String blockIndex = "eth-block";
+    private Long backpressure = Long.MAX_VALUE;
+    private boolean txImport = true;
 
     static {
         System.setProperty("es.set.netty.runtime.available.processors", "false");
+    }
+
+    public boolean isTxImport() {
+        return txImport;
+    }
+
+    public void setTxImport(boolean txImport) {
+        this.txImport = txImport;
     }
 
     public String getIpc() {
@@ -48,6 +61,14 @@ public class ApplicationConfig implements Configurable {
         this.storage = storage;
     }
 
+    public String getStartBlock() {
+        return startBlock;
+    }
+
+    public void setStartBlock(String startBlock) {
+        this.startBlock = startBlock;
+    }
+
     @Override
     public String getPath() {
         return path;
@@ -55,15 +76,27 @@ public class ApplicationConfig implements Configurable {
 
     @Override
     public void setPath(String path) {
-        this.path = path;
+        ApplicationConfig.path = path;
     }
 
-    public String getIndex() {
-        return index;
+    public static ApplicationConfig get() {
+        return Configurations.get(path, ApplicationConfig.class);
     }
 
-    public void setIndex(String index) {
-        this.index = index;
+    public String getBlockIndex() {
+        return blockIndex;
+    }
+
+    public String getTxIndex() {
+        return txIndex;
+    }
+
+    public void setTxIndex(String txIndex) {
+        this.txIndex = txIndex;
+    }
+
+    public void setBlockIndex(String blockIndex) {
+        this.blockIndex = blockIndex;
     }
 
     public Class getStoragePlugin() {
@@ -82,8 +115,16 @@ public class ApplicationConfig implements Configurable {
         throw new IllegalArgumentException("Missing 'storage' in 'application.config'");
     }
 
+    public Long getBackpressure() {
+        return backpressure;
+    }
+
+    public void setBackpressure(Long backpressure) {
+        this.backpressure = backpressure;
+    }
+
     public enum OSType {
-        UNIX, WINDOWS
+        UNIX, WINDOWS;
     }
 
     public enum StorageType {
@@ -91,6 +132,7 @@ public class ApplicationConfig implements Configurable {
         ELASTICSEARCH,
         HAZELCAST,
         SQLITE,
-        MEMORY
+        MEMORY,
+        JSONFILE
     }
 }

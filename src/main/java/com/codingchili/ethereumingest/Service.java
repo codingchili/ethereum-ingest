@@ -3,6 +3,7 @@ package com.codingchili.ethereumingest;
 import com.codingchili.core.Launcher;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.CoreService;
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 
 import static com.codingchili.core.files.Configurations.launcher;
@@ -25,13 +26,11 @@ public class Service implements CoreService {
     }
 
     @Override
-    public void start(Future<Void> start) {
-        core.handler(BlockHandler::new).setHandler(done -> {
-            if (done.succeeded()) {
-                start.complete();
-            } else {
-                start.fail(done.cause());
-            }
-        });
+    public void start(Future start) {
+        CompositeFuture.all(
+          core.service(TransactionService::new),
+          core.service(TransactionService::new),
+          core.service(BlockService::new)
+        );
     }
 }

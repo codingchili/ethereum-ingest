@@ -23,9 +23,18 @@ java -jar <filename>.jar
 Set configuration in application.json.
 
 Default configuration
-- storage: elasticsearch
-- os: windows
-- ipc: \\.\pipe\geth.ipc
+```
+{
+    "storage": "ELASTICSEARCH",
+    "ipc": "\\\\.\\pipe\\geth1.ipc",
+    "os": "WINDOWS",
+    "blockIndex": "ether-block-demo",
+    "txIndex": "ether-tx-demo",
+    "txImport": true,
+    "startBlock": "1890000",
+    "backpressure": 9223372036854775807
+}
+```
 
 
 Storage can be any of the following
