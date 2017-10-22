@@ -1,15 +1,17 @@
-package com.codingchili.ethereumingest;
+package com.codingchili.ethereumingest.model;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.files.Configurations;
+import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.ElasticMap;
 import com.codingchili.core.storage.HazelMap;
 import com.codingchili.core.storage.IndexedMapPersisted;
 import com.codingchili.core.storage.IndexedMapVolatile;
 import com.codingchili.core.storage.MongoDBMap;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import static com.codingchili.ethereumingest.ApplicationConfig.OSType.WINDOWS;
-import static com.codingchili.ethereumingest.ApplicationConfig.StorageType.ELASTICSEARCH;
+import static com.codingchili.ethereumingest.model.ApplicationConfig.OSType.WINDOWS;
+import static com.codingchili.ethereumingest.model.ApplicationConfig.StorageType.ELASTICSEARCH;
 
 /**
  * Representation of configuration file.s
@@ -17,6 +19,7 @@ import static com.codingchili.ethereumingest.ApplicationConfig.StorageType.ELAST
 public class ApplicationConfig implements Configurable {
     private static String path = "application.json";
     private String startBlock = "0";
+    private String blockEnd = "1500";
     private StorageType storage = ELASTICSEARCH;
     private String ipc = "\\\\.\\pipe\\geth.ipc";
     private OSType os = WINDOWS;
@@ -24,6 +27,7 @@ public class ApplicationConfig implements Configurable {
     private String blockIndex = "eth-block";
     private Long backpressure = Long.MAX_VALUE;
     private boolean txImport = true;
+    private boolean blockImport = true;
 
     static {
         System.setProperty("es.set.netty.runtime.available.processors", "false");
@@ -35,6 +39,22 @@ public class ApplicationConfig implements Configurable {
 
     public void setTxImport(boolean txImport) {
         this.txImport = txImport;
+    }
+
+    public boolean isBlockImport() {
+        return blockImport;
+    }
+
+    public void setBlockImport(boolean blockImport) {
+        this.blockImport = blockImport;
+    }
+
+    public String getBlockEnd() {
+        return blockEnd;
+    }
+
+    public void setBlockEnd(String blockEnd) {
+        this.blockEnd = blockEnd;
     }
 
     public String getIpc() {
@@ -99,7 +119,8 @@ public class ApplicationConfig implements Configurable {
         this.blockIndex = blockIndex;
     }
 
-    public Class getStoragePlugin() {
+    @JsonIgnore
+    public Class<? extends AsyncStorage> getStoragePlugin() {
         switch (storage) {
             case MONGODB:
                 return MongoDBMap.class;
@@ -132,7 +153,6 @@ public class ApplicationConfig implements Configurable {
         ELASTICSEARCH,
         HAZELCAST,
         SQLITE,
-        MEMORY,
-        JSONFILE
+        MEMORY
     }
 }

@@ -1,12 +1,12 @@
-package com.codingchili.ethereumingest;
+package com.codingchili.ethereumingest.importer;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.CoreService;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.ethereumingest.model.EthereumTransaction;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
-import org.web3j.protocol.core.methods.response.Transaction;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,9 +15,9 @@ import static com.codingchili.core.configuration.CoreStrings.ID_COLLECTION;
 import static com.codingchili.core.configuration.CoreStrings.ID_TIME;
 import static com.codingchili.core.configuration.CoreStrings.throwableToString;
 import static com.codingchili.core.logging.Level.ERROR;
-import static com.codingchili.ethereumingest.ApplicationContext.TX_ADDR;
-import static com.codingchili.ethereumingest.ApplicationContext.shorten;
-import static com.codingchili.ethereumingest.ApplicationContext.timestampFrom;
+import static com.codingchili.ethereumingest.importer.ApplicationContext.TX_ADDR;
+import static com.codingchili.ethereumingest.importer.ApplicationContext.shorten;
+import static com.codingchili.ethereumingest.importer.ApplicationContext.timestampFrom;
 
 public class TransactionService implements CoreService {
     private ApplicationContext context;

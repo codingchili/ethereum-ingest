@@ -1,9 +1,11 @@
-package com.codingchili.ethereumingest;
+package com.codingchili.ethereumingest.importer;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.CoreService;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.ethereumingest.model.ApplicationConfig;
+import com.codingchili.ethereumingest.model.EthereumBlock;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import org.web3j.protocol.core.methods.response.EthBlock;
@@ -11,9 +13,9 @@ import rx.Subscriber;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_TIME;
 import static com.codingchili.core.logging.Level.ERROR;
-import static com.codingchili.ethereumingest.ApplicationContext.TX_ADDR;
-import static com.codingchili.ethereumingest.ApplicationContext.getIpcClient;
-import static com.codingchili.ethereumingest.ApplicationContext.getStartBlock;
+import static com.codingchili.ethereumingest.importer.ApplicationContext.TX_ADDR;
+import static com.codingchili.ethereumingest.importer.ApplicationContext.getIpcClient;
+import static com.codingchili.ethereumingest.importer.ApplicationContext.getStartBlock;
 
 public class BlockService implements CoreService {
     private ApplicationConfig config = ApplicationConfig.get();

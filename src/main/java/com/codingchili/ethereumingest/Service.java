@@ -1,36 +1,30 @@
 package com.codingchili.ethereumingest;
 
-import com.codingchili.core.Launcher;
-import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.LaunchContext;
 import com.codingchili.core.listener.CoreService;
-import io.vertx.core.CompositeFuture;
+import com.codingchili.ethereumingest.commands.CommandLine;
 import io.vertx.core.Future;
+
+import java.io.IOException;
 
 import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.core.files.Configurations.system;
 
 public class Service implements CoreService {
-    private CoreContext core;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         system().setHandlers(1).setListeners(1);
-        launcher().setApplication("EthereumIngest")
+        launcher().setApplication("Ethereum Ingest")
                 .setVersion("1.0.0")
+                .setAuthor("codingchili@github")
                 .deployable(Service.class);
-        Launcher.main(args);
-    }
 
-    @Override
-    public void init(CoreContext core) {
-        this.core = core;
+        LaunchContext context = new LaunchContext(args);
+        context.setCommandExecutor(CommandLine.get()).start();
     }
 
     @Override
     public void start(Future start) {
-        CompositeFuture.all(
-          core.service(TransactionService::new),
-          core.service(TransactionService::new),
-          core.service(BlockService::new)
-        );
+        start.complete();
     }
 }

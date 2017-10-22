@@ -1,4 +1,4 @@
-package com.codingchili.ethereumingest;
+package com.codingchili.ethereumingest.importer;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
@@ -6,6 +6,9 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.Storable;
 import com.codingchili.core.storage.StorageLoader;
+import com.codingchili.ethereumingest.model.ApplicationConfig;
+import com.codingchili.ethereumingest.model.EthereumBlock;
+import com.codingchili.ethereumingest.model.EthereumTransaction;
 import io.vertx.core.Future;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
@@ -27,23 +30,25 @@ public class ApplicationContext extends SystemContext {
     private static ConsoleLogger logger = new ConsoleLogger(ApplicationContext.class);
     private CoreContext context;
 
-    static {
-        logger.log("Subscribing to ipc.. " + config.getIpc() + " on " + config.getOs());
-        if (config.getOs().equals(ApplicationConfig.OSType.WINDOWS)) {
-            web = Web3j.build(new WindowsIpcService(config.getIpc()));
-        } else {
-            web = Web3j.build(new UnixIpcService(config.getIpc()));
-        }
-        logger.log("Successfully connected to ipc, waiting for blocks..");
-
-        web.ethSyncing().observable().subscribe(is -> {
-            logger.event("synchronizing").put("is", is.isSyncing()).send();
-        });
-    }
-
     public ApplicationContext(CoreContext context) {
         super(context);
         this.context = context;
+
+        synchronized (ApplicationContext.class) {
+            if (web == null) {
+                logger.log("Subscribing to ipc.. " + config.getIpc() + " on " + config.getOs());
+                if (config.getOs().equals(ApplicationConfig.OSType.WINDOWS)) {
+                    web = Web3j.build(new WindowsIpcService(config.getIpc()));
+                } else {
+                    web = Web3j.build(new UnixIpcService(config.getIpc()));
+                }
+                logger.log("Successfully connected to ipc, waiting for blocks..");
+
+                web.ethSyncing().observable().subscribe(is -> {
+                    logger.event("synchronizing").put("is", is.isSyncing()).send();
+                });
+            }
+        }
     }
 
     private <E extends Storable> Future<AsyncStorage<E>> storage(Class<E> storable, String index) {

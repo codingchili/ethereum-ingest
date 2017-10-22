@@ -1,13 +1,9 @@
-package com.codingchili.ethereumingest;
+package com.codingchili.ethereumingest.model;
 
 import com.codingchili.core.storage.Storable;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
-import static com.codingchili.ethereumingest.ApplicationContext.timestampFrom;
+import static com.codingchili.ethereumingest.importer.ApplicationContext.timestampFrom;
 
 /**
  * Contains block data.

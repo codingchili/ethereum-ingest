@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="294.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.codingchili.ethereumingest.views.Splash">
+   <children>
+      <Label fx:id="title" contentDisplay="CENTER" layoutX="188.0" layoutY="74.0" prefHeight="47.0" prefWidth="236.0" text="Ethereum ingest" textAlignment="CENTER">
+         <font>
+            <Font size="32.0" />
+         </font>
+      </Label>
+      <Label fx:id="version" layoutX="288.0" layoutY="139.0" text="x.y.z" />
+      <Hyperlink fx:id="author" layoutX="221.0" layoutY="257.0" onMouseClicked="#openGithubLink" text="An app by codingchili@github" />
+      <ProgressIndicator fx:id="loading" layoutX="274.0" layoutY="170.0" />
+   </children>
+</Pane>
