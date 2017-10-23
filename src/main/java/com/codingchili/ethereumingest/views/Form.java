@@ -1,16 +1,22 @@
 package com.codingchili.ethereumingest.views;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
+import static com.codingchili.core.configuration.CoreStrings.throwableToString;
 import static com.codingchili.ethereumingest.views.Splash.SPLASH_XML;
 
-public class Form extends Application{
+public class Form extends Application {
     static final int WIDTH = 600;
     static final int HEIGHT = 300;
     static final String CSS_FILE = "/style.css";
@@ -50,6 +56,44 @@ public class Form extends Application{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void showAlertFromError(Throwable e) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initStyle(StageStyle.UTILITY);
+            alert.setTitle("Error");
+            alert.setContentText("An error has occured, submit an issue with the stack " +
+                    "trace if you need help.");
+            alert.setHeaderText(null);
+
+            TextArea textArea = new TextArea(throwableToString(e));
+            textArea.setEditable(false);
+
+            textArea.setMaxWidth(Double.MAX_VALUE);
+            textArea.setMaxHeight(Double.MAX_VALUE);
+            GridPane.setVgrow(textArea, Priority.ALWAYS);
+            GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+            GridPane expContent = new GridPane();
+            expContent.setMaxWidth(Double.MAX_VALUE);
+            expContent.add(textArea, 0, 1);
+            alert.getDialogPane().setExpandableContent(expContent);
+            alert.getDialogPane().getStylesheets().add(Form.class.getResource(CSS_FILE).toExternalForm());
+            alert.showAndWait();
+        });
+    }
+
+    public static void showInfoAlert(String title, String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.initStyle(StageStyle.UTILITY);
+            alert.setTitle(title);
+            alert.setContentText(message);
+            alert.setHeaderText(null);
+            alert.getDialogPane().getStylesheets().add(Form.class.getResource(CSS_FILE).toExternalForm());
+            alert.showAndWait();
+        });
     }
 
     public static String css(String cssFile) {

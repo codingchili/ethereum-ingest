@@ -1,26 +1,26 @@
 package com.codingchili.ethereumingest.importer;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.CoreService;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.ethereumingest.model.EthereumTransaction;
+import com.codingchili.ethereumingest.model.ImportListener;
+import com.codingchili.ethereumingest.model.Importer;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_COLLECTION;
-import static com.codingchili.core.configuration.CoreStrings.ID_TIME;
-import static com.codingchili.core.configuration.CoreStrings.throwableToString;
+import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.logging.Level.ERROR;
-import static com.codingchili.ethereumingest.importer.ApplicationContext.TX_ADDR;
-import static com.codingchili.ethereumingest.importer.ApplicationContext.shorten;
-import static com.codingchili.ethereumingest.importer.ApplicationContext.timestampFrom;
+import static com.codingchili.ethereumingest.importer.ApplicationContext.*;
 
-public class TransactionService implements CoreService {
+public class TransactionService implements Importer {
+    private ImportListener listener = new ImportListener() {};
     private ApplicationContext context;
+    private AtomicInteger queue = new AtomicInteger(0);
     private Logger logger;
 
     @Override
@@ -33,34 +33,41 @@ public class TransactionService implements CoreService {
     public void start(Future<Void> future) {
         context.txStorage().setHandler(storage -> {
 
-            context.bus().consumer(TX_ADDR, request -> {
-                Collection<EthereumTransaction> txs = getTransactionList(request.body());
-                final long start = System.currentTimeMillis();
+            if (storage.succeeded()) {
+                context.bus().consumer(TX_ADDR, request -> {
+                    Collection<EthereumTransaction> txs = getTransactionList(request.body());
+                    final long start = System.currentTimeMillis();
 
-                for (EthereumTransaction tx : txs) {
-                    String txHash = tx.getHash();
-                    logger.event("processingTx")
-                            .put("hash", shorten(txHash))
-                            .send("processing transaction");
+                    queue.getAndAdd(txs.size());
+                    for (EthereumTransaction tx : txs) {
+                        String txHash = tx.getHash();
+                        logger.event("processingTx")
+                                .put("hash", shorten(txHash))
+                                .send("processing transaction");
 
-                    storage.result().put(tx, done -> {
-                        if (done.succeeded()) {
-                            logger.event("persistedTx")
-                                    .put("hash", shorten(txHash))
-                                    .put("block", tx.getBlockNumberRaw())
-                                    .put("time", System.currentTimeMillis() - start)
-                                    .send("transaction persisted");
-                            request.reply(true);
-                        } else {
-                            logger.event("failedTx", ERROR)
-                                    .put("hash", txHash)
-                                    .send(throwableToString(done.cause()));
-                            request.reply(false);
-                        }
-                    });
-                }
-            });
-            future.complete();
+                        storage.result().put(tx, done -> {
+                            queue.decrementAndGet();
+                            if (done.succeeded()) {
+                                logger.event("persistedTx")
+                                        .put("hash", shorten(txHash))
+                                        .put("block", tx.getBlockNumberRaw())
+                                        .put("time", System.currentTimeMillis() - start)
+                                        .send("transaction persisted");
+                                request.reply(true);
+                            } else {
+                                logger.event("failedTx", ERROR)
+                                        .put("hash", txHash)
+                                        .send(throwableToString(done.cause()));
+                                listener.onError(done.cause());
+                                request.reply(false);
+                            }
+                        });
+                    }
+                });
+                future.complete();
+            } else {
+                future.fail(storage.cause());
+            }
         });
     }
 
@@ -73,5 +80,11 @@ public class TransactionService implements CoreService {
             txs.add(tx);
         });
         return txs;
+    }
+
+    @Override
+    public Importer setListener(ImportListener listener) {
+        this.listener = listener;
+        return this;
     }
 }

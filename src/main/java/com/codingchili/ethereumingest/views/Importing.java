@@ -5,23 +5,16 @@ import com.codingchili.core.context.StartupListener;
 import com.codingchili.ethereumingest.importer.BlockService;
 import com.codingchili.ethereumingest.importer.TransactionService;
 import com.codingchili.ethereumingest.model.ApplicationConfig;
-import com.sun.javafx.util.Utils;
+import com.codingchili.ethereumingest.model.ImportListener;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.Window;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,7 +22,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.codingchili.core.configuration.CoreStrings.throwableToString;
 import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.ethereumingest.views.Settings.SETTINGS_FXML;
 
@@ -37,7 +29,7 @@ public class Importing implements ApplicationScene {
     public static final String IMPORTING_FXML = "/importing.fxml";
     private static CoreContext core;
     private AtomicInteger progress = new AtomicInteger(0);
-    private List<String> deployments;
+    private List<String> deployments = new ArrayList<>();
     private ApplicationConfig config = ApplicationConfig.get();
     @FXML
     ProgressBar blockProgress;
@@ -77,13 +69,8 @@ public class Importing implements ApplicationScene {
         List<Future> deployed = new ArrayList<>();
         version.setText(launcher().getVersion());
 
-        if (config.isBlockImport()) {
-            deployed.add(core.service(BlockService::new));
-        }
-
-        if (config.isTxImport()) {
-            deployed.add(core.service(TransactionService::new));
-        }
+        deployed.add(core.service(() -> new BlockService().setListener(blockListener)));
+        deployed.add(core.service(() -> new TransactionService().setListener(txListener)));
 
         CompositeFuture.<String>all(deployed)
                 .setHandler(done -> Async.invoke(() -> {
@@ -93,29 +80,65 @@ public class Importing implements ApplicationScene {
                         title.setText("Importing");
                         deployments = done.result().list();
                     } else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.initStyle(StageStyle.UTILITY);
-                        alert.setTitle("Error importing");
-                        alert.setContentText("An error has occured, submit an issue with the stack " +
-                                "trace if you need help.");
-                        alert.setHeaderText(null);
-
-                        TextArea textArea = new TextArea(throwableToString(done.cause()));
-                        textArea.setEditable(false);
-
-                        textArea.setMaxWidth(Double.MAX_VALUE);
-                        textArea.setMaxHeight(Double.MAX_VALUE);
-                        GridPane.setVgrow(textArea, Priority.ALWAYS);
-                        GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-                        GridPane expContent = new GridPane();
-                        expContent.setMaxWidth(Double.MAX_VALUE);
-                        expContent.add(textArea, 0, 1);
-                        alert.getDialogPane().setExpandableContent(expContent);
-
-                        alert.showAndWait();
+                        Form.showAlertFromError(done.cause());
                         Async.setScene(SETTINGS_FXML);
                     }
                 }));
     }
+
+    private ImportListener blockListener = new ImportListener() {
+        @Override
+        public void onImported(String hash, Long number) {
+
+        }
+
+        @Override
+        public void onQueueChanged(int queued) {
+            Platform.runLater(() -> {
+                blockQueued.setText("Blocks queued: " + queued);
+            });
+        }
+
+        @Override
+        public void onFinished() {
+            // show success alert - back to settings.
+        }
+
+        @Override
+        public boolean onError(Throwable e) {
+            cancelImport(null);
+            Form.showAlertFromError(e);
+            Async.setScene(SETTINGS_FXML);
+            return true;
+        }
+    };
+
+    private ImportListener txListener = new ImportListener() {
+        @Override
+        public void onImported(String hash, Long number) {
+
+        }
+
+        @Override
+        public void onQueueChanged(int queued) {
+            Platform.runLater(() -> {
+                txQueued.setText("Tx queued: " + queued);
+            });
+        }
+
+        @Override
+        public void onFinished() {
+            if (!config.isBlockImport()) {
+                // show success alert - back to settings.
+            }
+        }
+
+        @Override
+        public boolean onError(Throwable e) {
+            cancelImport(null);
+            Form.showAlertFromError(e);
+            Async.setScene(SETTINGS_FXML);
+            return true;
+        }
+    };
 }

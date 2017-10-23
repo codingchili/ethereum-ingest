@@ -1,8 +1,6 @@
 package com.codingchili.ethereumingest.views;
 
 import com.codingchili.ethereumingest.model.ApplicationConfig;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -52,7 +50,7 @@ public class Settings implements ApplicationScene {
         blockIndex.setText(config.getBlockIndex());
         txIndex.setText(config.getTxIndex());
         importTx.setSelected(config.isTxImport());
-        importBlocks.setSelected(config.isTxImport());
+        importBlocks.setSelected(config.isBlockImport());
         endpoint.setText(config.getIpc());
         storageType.setItems(FXCollections.observableList(getStorageList()));
         storageType.getSelectionModel().select(config.getStorage().name());
@@ -87,6 +85,13 @@ public class Settings implements ApplicationScene {
                 ApplicationConfig.StorageType.valueOf(
                         storageType.getSelectionModel().getSelectedItem()));
         config.save();
-        Async.setScene(IMPORTING_FXML);
+
+        if (config.isBlockImport() || config.isTxImport()) {
+            Async.setScene(IMPORTING_FXML);
+        } else {
+            Form.showInfoAlert(
+                    "Configuration",
+                    "Nothing selected for import, please select to import blocks or transactions.");
+        }
     }
 }
