@@ -48,12 +48,15 @@ public class TransactionService implements Importer {
                         storage.result().put(tx, done -> {
                             queue.decrementAndGet();
                             if (done.succeeded()) {
+                                listener.onImported(tx.getHash(), tx.getBlockNumber().longValue());
                                 logger.event("persistedTx")
                                         .put("hash", shorten(txHash))
                                         .put("block", tx.getBlockNumberRaw())
                                         .put("time", System.currentTimeMillis() - start)
                                         .send("transaction persisted");
                                 request.reply(true);
+                                listener.onFinished(); // todo: does not know when the last tx is imported
+                                                        // finish when the current batch is done? mark the last batch?
                             } else {
                                 logger.event("failedTx", ERROR)
                                         .put("hash", txHash)

@@ -9,6 +9,8 @@ import com.codingchili.ethereumingest.model.ImportListener;
 import com.codingchili.ethereumingest.model.Importer;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
+import org.web3j.protocol.core.DefaultBlockParameter;
+import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import rx.Subscriber;
 
@@ -37,7 +39,10 @@ public class BlockService implements Importer {
         this.context.blockStorage().setHandler(storage -> {
 
             if (storage.succeeded()) {
-                getIpcClient().catchUpToLatestAndSubscribeToNewBlocksObservable(getStartBlock(), true).subscribe(
+                DefaultBlockParameter start = new DefaultBlockParameterNumber(Long.parseLong(config.getStartBlock()));
+                DefaultBlockParameter end = new DefaultBlockParameterNumber(Long.parseLong(config.getBlockEnd()));
+
+                getIpcClient().replayBlocksObservable(start, end, config.isTxImport()).subscribe(
                         new Subscriber<EthBlock>() {
                             private Long backpressure = config.getBackpressure();
 
@@ -49,6 +54,7 @@ public class BlockService implements Importer {
                             @Override
                             public void onCompleted() {
                                 logger.event("blockImportComplete").send();
+                                listener.onFinished();
                             }
 
                             @Override
@@ -59,30 +65,35 @@ public class BlockService implements Importer {
 
                             @Override
                             public void onNext(EthBlock ethBlock) {
-                                String blockNumber = ethBlock.getBlock().getNumber().toString();
+                                EthereumBlock block = new EthereumBlock(ethBlock.getBlock());
                                 final long start = System.currentTimeMillis();
 
                                 logger.event("processingBlock")
-                                        .put("number", blockNumber)
+                                        .put("number", block.getNumber())
                                         .send("persisting block");
 
                                 if (config.isBlockImport()) {
                                     listener.onQueueChanged(queue.incrementAndGet());
 
-                                    storage.result().put(new EthereumBlock(ethBlock.getBlock()), done -> {
+                                    storage.result().put(block, done -> {
+
                                         if (done.succeeded()) {
+                                            listener.onImported(block.getHash(), block.getNumber());
                                             logger.event("blockPersisted")
                                                     .put("time", System.currentTimeMillis() - start)
-                                                    .put("block", blockNumber)
+                                                    .put("block", block.getNumber())
                                                     .send("block persisted");
                                         } else {
                                             logger.event("blockFailed", ERROR)
-                                                    .put("block", blockNumber)
+                                                    .put("block", block.getNumber())
                                                     .send("failed to persist block");
                                             listener.onError(done.cause());
                                         }
                                         listener.onQueueChanged(queue.decrementAndGet());
                                     });
+                                } else {
+                                    // still inform the listener that the block has been processed.
+                                    listener.onImported(block.getHash(), block.getNumber());
                                 }
                                 if (config.isTxImport()) {
                                     context.bus().send(TX_ADDR, getTransactionList(ethBlock));
