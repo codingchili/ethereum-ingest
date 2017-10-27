@@ -24,11 +24,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.ethereumingest.views.Settings.SETTINGS_FXML;
+import static java.lang.String.format;
 
 public class Importing implements ApplicationScene {
     public static final String IMPORTING_FXML = "/importing.fxml";
     private static CoreContext core;
     private double progress = 0f;
+    private AtomicInteger totalBlocksImported = new AtomicInteger(0);
+    private AtomicInteger totalTxImported = new AtomicInteger(0);
     private AtomicLong blocksLeftToImport = new AtomicLong(0L);
     private AtomicInteger importedThisSec = new AtomicInteger(0);
     private Future blockImport = Future.future();
@@ -116,18 +119,21 @@ public class Importing implements ApplicationScene {
     }
 
     private void finishWithSuccess() {
-        // todo show number of blocks and tx-s imported.
-        Form.showInfoAlert("Success!", "The import has completed.");
+        Form.showInfoAlert("Success!",
+                format("Imported %d blocks into '%s'.\nImported %d transactions into '%s'.",
+                        totalBlocksImported.get(), config.getBlockIndex(),
+                        totalTxImported.get(), config.getTxIndex()));
         cancelImport(null);
     }
 
     private ImportListener blockListener = new ImportListener() {
         @Override
         public void onImported(String hash, Long number) {
+            totalBlocksImported.incrementAndGet();
+            importedThisSec.incrementAndGet();
+            blocksLeftToImport.decrementAndGet();
             Platform.runLater(() -> {
                 blockProgress.setProgress(getProgress(number));
-                blocksLeftToImport.decrementAndGet();
-                importedThisSec.incrementAndGet();
                 blocksLeft.setText(blocksLeftToImport.get() + " blocks left");
             });
         }
@@ -168,6 +174,7 @@ public class Importing implements ApplicationScene {
     private ImportListener txListener = new ImportListener() {
         @Override
         public void onImported(String hash, Long number) {
+            totalTxImported.incrementAndGet();
             Platform.runLater(() -> {
 
             });

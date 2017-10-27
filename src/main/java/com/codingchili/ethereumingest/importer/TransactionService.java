@@ -39,6 +39,7 @@ public class TransactionService implements Importer {
                     final long start = System.currentTimeMillis();
 
                     queue.getAndAdd(txs.size());
+                    listener.onQueueChanged(queue.get());
                     for (EthereumTransaction tx : txs) {
                         String txHash = tx.getHash();
                         logger.event("processingTx")
@@ -46,7 +47,7 @@ public class TransactionService implements Importer {
                                 .send("processing transaction");
 
                         storage.result().put(tx, done -> {
-                            queue.decrementAndGet();
+                            listener.onQueueChanged(queue.decrementAndGet());
                             if (done.succeeded()) {
                                 listener.onImported(tx.getHash(), tx.getBlockNumber().longValue());
                                 logger.event("persistedTx")

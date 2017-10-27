@@ -1,12 +1,12 @@
 {
   "startBlock" : "1890001",
-  "blockEnd" : "1891000",
+  "blockEnd" : "1892000",
   "storage" : "MEMORY",
   "ipc" : "\\\\.\\pipe\\geth.ipc",
   "os" : "WINDOWS",
   "txIndex" : "ether-tx-demo-ii",
   "blockIndex" : "etdder-block-demo-ii",
   "backpressure" : 9223372036854775807,
-  "txImport" : true,
+  "txImport" : false,
   "blockImport" : true
 }
