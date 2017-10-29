@@ -66,11 +66,11 @@ public class BlockService implements Importer {
         context.blockStorage().setHandler(done -> {
 
             if (done.succeeded()) {
+                future.complete();
                 storage = done.result();
                 Web3j client = getIpcClient();
                 Integer start = Integer.parseInt(config.getStartBlock());
                 Integer end = Integer.parseInt(config.getBlockEnd());
-                future.complete();
 
                 Observable.range(start, end - start).subscribe(new Subscriber<Integer>() {
                     final AtomicReference<String> hash = new AtomicReference<>();

@@ -56,9 +56,7 @@ public class Splash implements ApplicationScene {
                 });
             });
             Async.timer(2350, () -> {
-                Platform.runLater(() -> {
-                    Async.setScene(SETTINGS_FXML);
-                });
+                Async.setScene(SETTINGS_FXML);
             });
         });
     }

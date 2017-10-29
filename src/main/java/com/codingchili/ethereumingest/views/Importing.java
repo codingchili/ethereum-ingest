@@ -188,8 +188,8 @@ public class Importing implements ApplicationScene {
         Form.centerLabelText(statusLabel);
         Form.centerLabelText(title);
 
-        deployed.add(core.service(() -> new BlockService().setListener(blockListener)));
         deployed.add(core.service(() -> new TransactionService().setListener(txListener)));
+        deployed.add(core.service(() -> new BlockService().setListener(blockListener)));
 
         CompositeFuture.<String>all(deployed)
                 .setHandler(done -> Async.invoke(() -> {
