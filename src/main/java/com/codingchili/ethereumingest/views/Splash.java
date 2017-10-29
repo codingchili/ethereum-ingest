@@ -34,7 +34,7 @@ public class Splash implements ApplicationScene {
     @FXML
     private void openGithubLink(Event event) {
         try {
-            Desktop.getDesktop().browse(URI.create("http://github.com/codingchili"));
+            Desktop.getDesktop().browse(URI.create("https://github.com/codingchili"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -42,6 +42,9 @@ public class Splash implements ApplicationScene {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Form.centerLabelText(title);
+        Form.centerLabelText(version);
+
         version.setText(launcher().getVersion());
         title.setText(launcher().getApplication());
         author.setText("An app by " + launcher().getAuthor());

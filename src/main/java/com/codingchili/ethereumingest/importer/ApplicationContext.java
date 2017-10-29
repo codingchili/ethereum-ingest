@@ -7,8 +7,8 @@ import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.Storable;
 import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.ethereumingest.model.ApplicationConfig;
-import com.codingchili.ethereumingest.model.EthereumBlock;
-import com.codingchili.ethereumingest.model.EthereumTransaction;
+import com.codingchili.ethereumingest.model.StorableBlock;
+import com.codingchili.ethereumingest.model.StorableTransaction;
 import io.vertx.core.Future;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
@@ -84,12 +84,12 @@ public class ApplicationContext extends SystemContext {
         return web;
     }
 
-    public Future<AsyncStorage<EthereumBlock>> blockStorage() {
-        return storage(EthereumBlock.class, config.getBlockIndex());
+    public Future<AsyncStorage<StorableBlock>> blockStorage() {
+        return storage(StorableBlock.class, config.getBlockIndex());
     }
 
-    public Future<AsyncStorage<EthereumTransaction>> txStorage() {
-        return storage(EthereumTransaction.class, config.getTxIndex());
+    public Future<AsyncStorage<StorableTransaction>> txStorage() {
+        return storage(StorableTransaction.class, config.getTxIndex());
     }
 
     public static String timestampFrom(Long epochSecond) {

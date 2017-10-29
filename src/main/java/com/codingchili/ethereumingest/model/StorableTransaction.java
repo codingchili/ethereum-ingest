@@ -5,7 +5,7 @@ import org.web3j.protocol.core.methods.response.Transaction;
 
 import java.math.BigInteger;
 
-public class EthereumTransaction extends Transaction implements Storable {
+public class StorableTransaction extends Transaction implements Storable {
     public static final String ONE_MILLION = "1000000";
     private String timestamp;
 

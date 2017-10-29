@@ -10,6 +10,9 @@ import java.io.IOException;
 import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.core.files.Configurations.system;
 
+/**
+ * Application entry point.
+ */
 public class Service implements CoreService {
 
     public static void main(String[] args) throws IOException {

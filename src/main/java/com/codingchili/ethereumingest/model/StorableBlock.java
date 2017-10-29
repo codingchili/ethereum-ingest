@@ -8,7 +8,7 @@ import static com.codingchili.ethereumingest.importer.ApplicationContext.timesta
 /**
  * Contains block data.
  */
-public class EthereumBlock implements Storable {
+public class StorableBlock implements Storable {
     private String hash;
     private Long number;
     private Long size;
@@ -18,7 +18,7 @@ public class EthereumBlock implements Storable {
     private Integer txcount;
     private String timestamp;
 
-    public EthereumBlock(EthBlock.Block block) {
+    public StorableBlock(EthBlock.Block block) {
         this.number = block.getNumber().longValue();
         this.hash = block.getHash();
         this.difficulty = block.getDifficultyRaw();

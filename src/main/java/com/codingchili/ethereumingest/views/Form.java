@@ -1,15 +1,21 @@
 package com.codingchili.ethereumingest.views;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
@@ -17,13 +23,13 @@ import static com.codingchili.core.configuration.CoreStrings.throwableToString;
 import static com.codingchili.ethereumingest.views.Splash.SPLASH_XML;
 
 public class Form extends Application {
+    private static final int FADE_IN_MS = 675;
     static final int WIDTH = 600;
     static final int HEIGHT = 300;
     static final String CSS_FILE = "/style.css";
     private static final String APP_TITLE = "Ethereum Ingest";
     private static double offsetX = 0;
     private static double offsetY = 0;
-    private Stage stage;
 
     public void start() {
         Async.onExecutor(Application::launch);
@@ -31,13 +37,25 @@ public class Form extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        this.stage = stage;
         stage.setTitle(APP_TITLE);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setResizable(false);
         stage.centerOnScreen();
         Async.setStage(stage);
         Async.setScene(SPLASH_XML);
+    }
+
+    public static void fadeIn(Node node) {
+        FadeTransition transition = new FadeTransition(Duration.millis(FADE_IN_MS), node);
+        transition.setFromValue(0.0);
+        transition.setToValue(1.0);
+        transition.play();
+    }
+
+    public static void centerLabelText(Label label) {
+        label.setContentDisplay(ContentDisplay.TOP);
+        label.setMaxWidth(Double.MAX_VALUE);
+        label.setAlignment(Pos.CENTER);
     }
 
     public static Parent parent(String resource) {

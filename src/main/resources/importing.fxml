@@ -17,22 +17,22 @@
             <Font size="17.0" />
          </font>
       </Label>
-      <Label fx:id="version" layoutX="554.0" layoutY="263.0" text="x.y.z" />
-      <Button layoutX="159.0" layoutY="251.0" mnemonicParsing="false" onMouseClicked="#cancelImport" prefHeight="25.0" prefWidth="283.0" styleClass="primary" text="CANCEL" />
+      <Button layoutX="159.0" layoutY="251.0" mnemonicParsing="false" onMouseClicked="#cancelImport" prefHeight="25.0" prefWidth="283.0" styleClass="danger" text="CANCEL" />
       <Pane fx:id="importingPane" layoutX="2.0" layoutY="58.0" prefHeight="158.0" prefWidth="600.0" visible="false">
          <children>
-            <ProgressBar fx:id="blockProgress" layoutX="7.0" layoutY="63.0" prefHeight="33.0" prefWidth="581.0" />
+            <ProgressBar fx:id="blockProgress" layoutX="7.0" layoutY="63.0" prefHeight="33.0" prefWidth="581.0" progress="0.0" />
             <Label fx:id="importedPerSec" layoutX="260.0" layoutY="46.0" text="Imported/s" />
-            <Label fx:id="txQueued" layoutX="532.0" layoutY="46.0" text="Tx queued" />
-            <Label fx:id="blocksQueued" layoutX="7.0" layoutY="46.0" text="Blocks queued" />
+            <Label fx:id="txQueued" layoutX="508.0" layoutY="46.0" text="Tx queued" />
+            <Label fx:id="blocksQueued" layoutX="21.0" layoutY="46.0" text="Blocks queued" />
             <Label fx:id="blocksLeft" layoutX="262.0" layoutY="96.0" text="Blocks left" />
          </children>
       </Pane>
-      <Pane fx:id="loadingPane" layoutX="200.0" layoutY="6.0" prefHeight="241.0" prefWidth="200.0">
+      <Pane fx:id="loadingPane" layoutX="-1.0" layoutY="6.0" prefHeight="241.0" prefWidth="600.0">
          <children>
-            <ProgressIndicator fx:id="connectionStatus" layoutX="74.0" layoutY="94.0" />
-            <Label fx:id="statusLabel" layoutX="67.0" layoutY="181.0" text="Connecting.." />
+            <ProgressIndicator fx:id="connectionStatus" layoutX="274.0" layoutY="94.0" />
+            <Label fx:id="statusLabel" layoutX="4.0" layoutY="170.0" prefHeight="17.0" prefWidth="593.0" text="Connecting.." textAlignment="CENTER" />
          </children>
       </Pane>
+      <Hyperlink fx:id="version" layoutX="549.0" layoutY="261.0" text="x.y.z" onMouseClicked="#openGithubRepo"/>
    </children>
 </Pane>

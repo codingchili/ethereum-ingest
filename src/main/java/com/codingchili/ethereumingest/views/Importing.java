@@ -11,14 +11,21 @@ import io.vertx.core.Future;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.Pane;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -29,11 +36,14 @@ import static java.lang.String.format;
 public class Importing implements ApplicationScene {
     public static final String IMPORTING_FXML = "/importing.fxml";
     private static CoreContext core;
+    private static final int BLOCK_WAIT_SHOW = 3800;
     private double progress = 0f;
     private AtomicInteger totalBlocksImported = new AtomicInteger(0);
     private AtomicInteger totalTxImported = new AtomicInteger(0);
     private AtomicLong blocksLeftToImport = new AtomicLong(0L);
     private AtomicInteger importedThisSec = new AtomicInteger(0);
+    private AtomicBoolean synced = new AtomicBoolean(false);
+    private AtomicLong lastBlock = new AtomicLong(0);
     private Future blockImport = Future.future();
     private Future txImport = Future.future();
     private List<String> deployments = new ArrayList<>();
@@ -55,7 +65,9 @@ public class Importing implements ApplicationScene {
     @FXML
     Pane loadingPane;
     @FXML
-    Label version;
+    Hyperlink version;
+    @FXML
+    Label statusLabel;
 
     static {
         StartupListener.subscibe(core -> Importing.core = core);
@@ -71,6 +83,9 @@ public class Importing implements ApplicationScene {
     public void initialize(URL location, ResourceBundle resources) {
         List<Future> deployed = new ArrayList<>();
         version.setText(launcher().getVersion());
+
+        Form.centerLabelText(statusLabel);
+        Form.centerLabelText(title);
 
         deployed.add(core.service(() -> new BlockService().setListener(blockListener)));
         deployed.add(core.service(() -> new TransactionService().setListener(txListener)));
@@ -127,8 +142,34 @@ public class Importing implements ApplicationScene {
     }
 
     private ImportListener blockListener = new ImportListener() {
+
+        @Override
+        public void onSourceDepleted() {
+            synced.set(true);
+            core.timer(BLOCK_WAIT_SHOW, done -> {
+                Platform.runLater(() -> {
+                    Form.fadeIn(loadingPane);
+                    loadingPane.setVisible(true);
+                    importingPane.setVisible(false);
+                    title.setText("Pending");
+                    statusLabel.setText("Waiting for block number " + (lastBlock.get() + 1) + " ..");
+                });
+            });
+        }
+
+        @Override
+        public void onImportStarted(String hash, Long number) {
+            if (synced.get()) {
+                Platform.runLater(() -> {
+                    loadingPane.setVisible(false);
+                    importingPane.setVisible(true);
+                });
+            }
+        }
+
         @Override
         public void onImported(String hash, Long number) {
+            lastBlock.set(number);
             totalBlocksImported.incrementAndGet();
             importedThisSec.incrementAndGet();
             blocksLeftToImport.decrementAndGet();
@@ -142,9 +183,9 @@ public class Importing implements ApplicationScene {
             long startBlock = Long.parseLong(config.getStartBlock());
             long blockEnd = Long.parseLong(config.getBlockEnd());
             long total = blockEnd - startBlock;
-            long imported = blockNumber - startBlock;
+            long current = blockNumber - startBlock;
 
-            double progress = (imported * 1.0 / total * 1.0);
+            double progress = (current * 1.0 / total * 1.0);
             if (progress > Importing.this.progress) {
                 // prevent the progress from jumping back when blocks are not imported in order.
                 Importing.this.progress = progress;
@@ -165,8 +206,8 @@ public class Importing implements ApplicationScene {
         }
 
         @Override
-        public boolean onError(Throwable e) {
-            blockImport.fail(e);
+        public boolean onError(Throwable e, String hash) {
+            blockImport.tryFail(e);
             return true;
         }
     };
@@ -191,9 +232,18 @@ public class Importing implements ApplicationScene {
         }
 
         @Override
-        public boolean onError(Throwable e) {
+        public boolean onError(Throwable e, String hash) {
             txImport.tryFail(e);
             return true;
         }
     };
+
+    @FXML
+    private void openGithubRepo(Event event) {
+        try {
+            Desktop.getDesktop().browse(URI.create("https://github.com/codingchili/ethereum-ingest"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

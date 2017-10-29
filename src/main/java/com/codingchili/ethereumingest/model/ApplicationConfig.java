@@ -25,7 +25,8 @@ public class ApplicationConfig implements Configurable {
     private OSType os = WINDOWS;
     private String txIndex = "eth-tx";
     private String blockIndex = "eth-block";
-    private Long backpressure = Long.MAX_VALUE;
+    private Long backpressureBlocks = 10L;
+    private Long backPressureTx = 10L;
     private boolean txImport = true;
     private boolean blockImport = true;
 
@@ -136,12 +137,20 @@ public class ApplicationConfig implements Configurable {
         throw new IllegalArgumentException("Missing 'storage' in 'application.config'");
     }
 
-    public Long getBackpressure() {
-        return backpressure;
+    public Long getBackpressureBlocks() {
+        return backpressureBlocks;
     }
 
-    public void setBackpressure(Long backpressure) {
-        this.backpressure = backpressure;
+    public void setBackpressureBlocks(Long backpressureBlocks) {
+        this.backpressureBlocks = backpressureBlocks;
+    }
+
+    public Long getBackPressureTx() {
+        return backPressureTx;
+    }
+
+    public void setBackPressureTx(Long backPressureTx) {
+        this.backPressureTx = backPressureTx;
     }
 
     public enum OSType {

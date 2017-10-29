@@ -21,18 +21,12 @@ public class Async {
     private static CoreContext core;
 
     static {
-        StartupListener.subscibe(core -> {
-            Async.core = core;
-        });
+        StartupListener.subscibe(core -> Async.core = core);
     }
 
     public static void setScene(String xml) {
         Parent parent = Form.parent(xml);
-
-        FadeTransition transition = new FadeTransition(Duration.millis(1250), parent);
-        transition.setFromValue(0.0);
-        transition.setToValue(1.0);
-        transition.play();
+        Form.fadeIn(parent);
 
         StyledScene scene = new StyledScene(parent);
         invoke(() -> {

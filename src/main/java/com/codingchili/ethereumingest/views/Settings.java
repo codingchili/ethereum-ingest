@@ -6,9 +6,14 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+import javax.swing.event.HyperlinkListener;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +27,7 @@ public class Settings implements ApplicationScene {
     public static final String SETTINGS_FXML = "/settings.fxml";
     private ApplicationConfig config = ApplicationConfig.get();
     @FXML
-    Label version;
+    Hyperlink version;
     @FXML
     TextField blockStart;
     @FXML
@@ -39,10 +44,14 @@ public class Settings implements ApplicationScene {
     CheckBox importBlocks;
     @FXML
     ComboBox<String> storageType;
+    @FXML
+    Label title;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Form.centerLabelText(title);
+
         // set values from configuration.
         version.setText(launcher().getVersion());
         blockEnd.setText(config.getBlockEnd());
@@ -92,6 +101,15 @@ public class Settings implements ApplicationScene {
             Form.showInfoAlert(
                     "Configuration",
                     "Nothing selected for import, please select to import blocks or transactions.");
+        }
+    }
+
+    @FXML
+    private void openGithubRepo(Event event) {
+        try {
+            Desktop.getDesktop().browse(URI.create("https://github.com/codingchili/ethereum-ingest"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

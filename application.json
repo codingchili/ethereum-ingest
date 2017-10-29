@@ -1,12 +1,13 @@
 {
-  "startBlock" : "1890001",
-  "blockEnd" : "1892000",
-  "storage" : "MEMORY",
+  "startBlock" : "1964770",
+  "blockEnd" : "1964900",
+  "storage" : "ELASTICSEARCH",
   "ipc" : "\\\\.\\pipe\\geth.ipc",
   "os" : "WINDOWS",
-  "txIndex" : "ether-tx-demo-ii",
-  "blockIndex" : "etdder-block-demo-ii",
-  "backpressure" : 9223372036854775807,
-  "txImport" : false,
+  "txIndex" : "ether-tx-demo-iix",
+  "blockIndex" : "etdder-block-demo-iix",
+  "backpressureBlocks" : 5,
+  "backPressureTx" : 35,
+  "txImport" : true,
   "blockImport" : true
 }
