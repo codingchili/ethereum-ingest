@@ -11,7 +11,8 @@ import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.core.files.Configurations.system;
 
 /**
- * Application entry point.
+ * Application entry point, starts up the framework and parses the
+ * commandline options.
  */
 public class Service implements CoreService {
 

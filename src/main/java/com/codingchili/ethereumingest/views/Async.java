@@ -2,19 +2,20 @@ package com.codingchili.ethereumingest.views;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StartupListener;
-import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+/**
+ * Simple helper to simplify accessing view state from non-ui threads.
+ */
 public class Async {
     private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
     private static Stage holder;

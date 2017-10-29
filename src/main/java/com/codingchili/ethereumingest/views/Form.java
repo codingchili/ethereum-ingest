@@ -22,28 +22,17 @@ import java.io.IOException;
 import static com.codingchili.core.configuration.CoreStrings.throwableToString;
 import static com.codingchili.ethereumingest.views.Splash.SPLASH_XML;
 
+/**
+ * Helper class to simplify some form related tasks in JavaFX.
+ */
 public class Form extends Application {
-    private static final int FADE_IN_MS = 675;
     static final int WIDTH = 600;
     static final int HEIGHT = 300;
     static final String CSS_FILE = "/style.css";
+    private static final int FADE_IN_MS = 675;
     private static final String APP_TITLE = "Ethereum Ingest";
     private static double offsetX = 0;
     private static double offsetY = 0;
-
-    public void start() {
-        Async.onExecutor(Application::launch);
-    }
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        stage.setTitle(APP_TITLE);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setResizable(false);
-        stage.centerOnScreen();
-        Async.setStage(stage);
-        Async.setScene(SPLASH_XML);
-    }
 
     public static void fadeIn(Node node) {
         FadeTransition transition = new FadeTransition(Duration.millis(FADE_IN_MS), node);
@@ -116,5 +105,19 @@ public class Form extends Application {
 
     public static String css(String cssFile) {
         return Form.class.getResource(cssFile).toExternalForm();
+    }
+
+    public void start() {
+        Async.onExecutor(Application::launch);
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        stage.setTitle(APP_TITLE);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setResizable(false);
+        stage.centerOnScreen();
+        Async.setStage(stage);
+        Async.setScene(SPLASH_XML);
     }
 }

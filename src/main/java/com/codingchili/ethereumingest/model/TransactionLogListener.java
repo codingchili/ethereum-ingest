@@ -9,6 +9,9 @@ import static com.codingchili.core.configuration.CoreStrings.throwableToString;
 import static com.codingchili.core.logging.Level.ERROR;
 import static com.codingchili.ethereumingest.importer.ApplicationContext.shorten;
 
+/**
+ * A logging listener used when importing transactions from the commandline.
+ */
 public class TransactionLogListener implements ImportListener {
     private Map<String, Long> timers = new HashMap<>();
     private Logger logger;
@@ -35,10 +38,9 @@ public class TransactionLogListener implements ImportListener {
     }
 
     @Override
-    public boolean onError(Throwable e, String hash) {
+    public void onError(Throwable e, String hash) {
         logger.event("failedTx", ERROR)
                 .put("hash", hash)
                 .send(throwableToString(e));
-        return true;
     }
 }

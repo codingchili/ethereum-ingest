@@ -30,16 +30,26 @@ import static com.codingchili.core.configuration.CoreStrings.ID_TIME;
 import static com.codingchili.ethereumingest.importer.ApplicationContext.TX_ADDR;
 import static com.codingchili.ethereumingest.importer.ApplicationContext.getIpcClient;
 
+/**
+ * A service that reads block data from an Ethereum client IPC connection.
+ * <p>
+ * If #{@link ApplicationConfig#txImport} is set to true will request full
+ * transaction details in each block. The transaction data is forwarded to
+ * another handler that imports the transactions into the configured storage.
+ * <p>
+ * If #{@link ApplicationConfig#blockImport} this service will also import
+ * block data into the configured storage.
+ */
 public class BlockService implements Importer {
+    private static final String BLOCK_RETRY_TIMER = "blockRetryTimer";
     private static final int ONE_MINUTE = 60000;
-    public static final int ONE_SECOND = 1000;
-    public static final String BLOCK_RETRY_TIMER = "blockRetryTimer";
+    private static final int ONE_SECOND = 1000;
     private AtomicBoolean stopping = new AtomicBoolean(false);
     private AtomicLong timerId = new AtomicLong(0);
-    private ApplicationConfig config = ApplicationConfig.get();
-    private ImportListener listener;
-    private AsyncStorage<StorableBlock> storage;
     private AtomicInteger queue = new AtomicInteger(0);
+    private ApplicationConfig config = ApplicationConfig.get();
+    private AsyncStorage<StorableBlock> storage;
+    private ImportListener listener;
     private ApplicationContext context;
 
     @Override
@@ -131,7 +141,8 @@ public class BlockService implements Importer {
                                 }
                                 exec.complete();
                             }
-                        }, (done) -> {});
+                        }, (done) -> {
+                        });
                     }
                 });
             } else {

@@ -14,10 +14,18 @@ import static com.codingchili.ethereumingest.model.ApplicationConfig.OSType.WIND
 import static com.codingchili.ethereumingest.model.ApplicationConfig.StorageType.ELASTICSEARCH;
 
 /**
- * Representation of configuration file.s
+ * Representation of application.json configuration file.
+ * Changes to the import settings in the GUI will be persisted to disk.
  */
 public class ApplicationConfig implements Configurable {
     private static String path = "application.json";
+
+    static {
+        // required to prevent a collision between vert.x and eleasticsearch connector
+        // both uses netty as a http/eventloop provider.
+        System.setProperty("es.set.netty.runtime.available.processors", "false");
+    }
+
     private String startBlock = "0";
     private String blockEnd = "1500";
     private StorageType storage = ELASTICSEARCH;
@@ -30,8 +38,8 @@ public class ApplicationConfig implements Configurable {
     private boolean txImport = true;
     private boolean blockImport = true;
 
-    static {
-        System.setProperty("es.set.netty.runtime.available.processors", "false");
+    public static ApplicationConfig get() {
+        return Configurations.get(path, ApplicationConfig.class);
     }
 
     public boolean isTxImport() {
@@ -100,12 +108,12 @@ public class ApplicationConfig implements Configurable {
         ApplicationConfig.path = path;
     }
 
-    public static ApplicationConfig get() {
-        return Configurations.get(path, ApplicationConfig.class);
-    }
-
     public String getBlockIndex() {
         return blockIndex;
+    }
+
+    public void setBlockIndex(String blockIndex) {
+        this.blockIndex = blockIndex;
     }
 
     public String getTxIndex() {
@@ -114,10 +122,6 @@ public class ApplicationConfig implements Configurable {
 
     public void setTxIndex(String txIndex) {
         this.txIndex = txIndex;
-    }
-
-    public void setBlockIndex(String blockIndex) {
-        this.blockIndex = blockIndex;
     }
 
     @JsonIgnore

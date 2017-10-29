@@ -24,12 +24,17 @@ import static com.codingchili.core.configuration.CoreStrings.ID_TIME;
 import static com.codingchili.ethereumingest.importer.ApplicationContext.TX_ADDR;
 import static com.codingchili.ethereumingest.importer.ApplicationContext.timestampFrom;
 
+/**
+ * A service that receives a list of transactions from each block retrieved from the
+ * ipc connection in #{@link BlockService}. This service is only used if
+ * #{@link ApplicationConfig#txImport} is set to true.
+ */
 public class TransactionService implements Importer {
-    private ImportListener listener;
-    private ApplicationConfig config = ApplicationConfig.get();
-    private AsyncStorage<StorableTransaction> storage;
-    private ApplicationContext context;
     private AtomicInteger queue = new AtomicInteger(0);
+    private AsyncStorage<StorableTransaction> storage;
+    private ApplicationConfig config = ApplicationConfig.get();
+    private ApplicationContext context;
+    private ImportListener listener;
 
     @Override
     public void init(CoreContext context) {
@@ -49,8 +54,8 @@ public class TransactionService implements Importer {
                 context.bus().consumer(TX_ADDR, request -> {
                     Collection<StorableTransaction> txs = getTransactionList(request.body());
                     queue.getAndAdd(txs.size());
-                    importTx(request, txs);
                     listener.onQueueChanged(queue.get());
+                    importTx(request, txs);
                 });
                 future.complete();
             } else {
@@ -100,6 +105,12 @@ public class TransactionService implements Importer {
         });
     }
 
+    /**
+     * Retrieves a list of transactions from an eventbus message.
+     *
+     * @param body a json object that contains transactions.
+     * @return a collection of transactions.
+     */
     private Collection<StorableTransaction> getTransactionList(Object body) {
         Collection<StorableTransaction> txs = new ArrayList<>();
         JsonObject data = (JsonObject) body;

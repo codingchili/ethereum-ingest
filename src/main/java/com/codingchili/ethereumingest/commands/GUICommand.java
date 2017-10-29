@@ -7,6 +7,10 @@ import io.vertx.core.Future;
 
 import static com.codingchili.core.configuration.CoreStrings.getCommand;
 
+/**
+ * Starting the application with the #{@link #getName()} flag opens
+ * the graphical interface.
+ */
 public class GUICommand implements Command {
 
     @Override

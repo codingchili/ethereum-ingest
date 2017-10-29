@@ -6,7 +6,8 @@ import org.web3j.protocol.core.methods.response.EthBlock;
 import static com.codingchili.ethereumingest.importer.ApplicationContext.timestampFrom;
 
 /**
- * Contains block data.
+ * Contains block data, a wrapper for an #{@link EthBlock} that may be used
+ * with storages in chili-core. Defines the blocks hash as its unique id.
  */
 public class StorableBlock implements Storable {
     private String hash;

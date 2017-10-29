@@ -23,6 +23,9 @@ import java.time.ZonedDateTime;
 
 import static com.codingchili.core.logging.Level.STARTUP;
 
+/**
+ * Application contexts: contains shared logic between the deployed services.
+ */
 public class ApplicationContext extends SystemContext {
     public static final String TX_ADDR = "tx";
     private static ApplicationConfig config = ApplicationConfig.get();
@@ -51,6 +54,23 @@ public class ApplicationContext extends SystemContext {
         }
     }
 
+    public static DefaultBlockParameter getStartBlock() {
+        return new DefaultBlockParameterNumber(new BigInteger(config.getStartBlock()));
+    }
+
+    public static Web3j getIpcClient() {
+        return web;
+    }
+
+    public static String timestampFrom(Long epochSecond) {
+        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochSecond),
+                ZoneId.systemDefault()).toOffsetDateTime().toString();
+    }
+
+    public static String shorten(String hash) {
+        return hash.substring(0, 8) + "..";
+    }
+
     private <E extends Storable> Future<AsyncStorage<E>> storage(Class<E> storable, String index) {
         Future<AsyncStorage<E>> future = Future.future();
 
@@ -76,28 +96,11 @@ public class ApplicationContext extends SystemContext {
         return future;
     }
 
-    public static DefaultBlockParameter getStartBlock() {
-        return new DefaultBlockParameterNumber(new BigInteger(config.getStartBlock()));
-    }
-
-    public static Web3j getIpcClient() {
-        return web;
-    }
-
     public Future<AsyncStorage<StorableBlock>> blockStorage() {
         return storage(StorableBlock.class, config.getBlockIndex());
     }
 
     public Future<AsyncStorage<StorableTransaction>> txStorage() {
         return storage(StorableTransaction.class, config.getTxIndex());
-    }
-
-    public static String timestampFrom(Long epochSecond) {
-        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochSecond),
-                ZoneId.systemDefault()).toOffsetDateTime().toString();
-    }
-
-    public static String shorten(String hash) {
-        return hash.substring(0, 8) + "..";
     }
 }

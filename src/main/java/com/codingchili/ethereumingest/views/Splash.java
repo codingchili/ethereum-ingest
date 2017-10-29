@@ -13,13 +13,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.ethereumingest.views.Settings.SETTINGS_FXML;
 
+/**
+ * This view is shown when the application is loading.
+ */
 public class Splash implements ApplicationScene {
     public static final String SPLASH_XML = "/splash.fxml";
     @FXML

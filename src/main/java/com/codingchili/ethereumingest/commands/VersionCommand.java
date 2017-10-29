@@ -8,6 +8,10 @@ import io.vertx.core.Future;
 import static com.codingchili.core.configuration.CoreStrings.getCommand;
 import static com.codingchili.core.files.Configurations.launcher;
 
+/**
+ * When inovked from the command line with the --version option displays
+ * the current version of the application.
+ */
 public class VersionCommand implements Command {
 
     @Override

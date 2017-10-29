@@ -12,6 +12,11 @@ import io.vertx.core.Future;
 import static com.codingchili.core.configuration.CoreStrings.getCommand;
 import static com.codingchili.core.files.Configurations.launcher;
 
+/**
+ * A command that starts an import using appplication.json configuration if present.
+ * If not present the import is started with the defaults in
+ * #{@link com.codingchili.ethereumingest.model.ApplicationConfig}
+ */
 public class ImportCommand implements Command, CoreService {
     private CoreContext core;
 

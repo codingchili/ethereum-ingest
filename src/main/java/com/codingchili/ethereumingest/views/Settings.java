@@ -10,7 +10,6 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
@@ -23,9 +22,13 @@ import java.util.stream.Collectors;
 import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.ethereumingest.views.Importing.IMPORTING_FXML;
 
+/**
+ * A view that is visible before importing is started.
+ * Shows some parameters from application.config that is editable.
+ * When the import starts the values are saved back into application.config.
+ */
 public class Settings implements ApplicationScene {
     public static final String SETTINGS_FXML = "/settings.fxml";
-    private ApplicationConfig config = ApplicationConfig.get();
     @FXML
     Hyperlink version;
     @FXML
@@ -46,7 +49,7 @@ public class Settings implements ApplicationScene {
     ComboBox<String> storageType;
     @FXML
     Label title;
-
+    private ApplicationConfig config = ApplicationConfig.get();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

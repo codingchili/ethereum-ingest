@@ -11,8 +11,6 @@ import io.vertx.core.Future;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -33,21 +31,24 @@ import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.ethereumingest.views.Settings.SETTINGS_FXML;
 import static java.lang.String.format;
 
+/**
+ * View that is visible when importing.
+ * <p>
+ * - Shows import progress bar while importing
+ * - Shows a spinner while waiting for new blocks
+ * - Shows a spinner while waiting for the storage to load/connect
+ * - Shows an error message when an import operation fails. The error mesage
+ * is displayed in an Alert, which when closed returns the view to Import.
+ */
 public class Importing implements ApplicationScene {
     public static final String IMPORTING_FXML = "/importing.fxml";
-    private static CoreContext core;
     private static final int BLOCK_WAIT_SHOW = 3800;
-    private double progress = 0f;
-    private AtomicInteger totalBlocksImported = new AtomicInteger(0);
-    private AtomicInteger totalTxImported = new AtomicInteger(0);
-    private AtomicLong blocksLeftToImport = new AtomicLong(0L);
-    private AtomicInteger importedThisSec = new AtomicInteger(0);
-    private AtomicBoolean synced = new AtomicBoolean(false);
-    private AtomicLong lastBlock = new AtomicLong(0);
-    private Future blockImport = Future.future();
-    private Future txImport = Future.future();
-    private List<String> deployments = new ArrayList<>();
-    private ApplicationConfig config = ApplicationConfig.get();
+    private static CoreContext core;
+
+    static {
+        StartupListener.subscibe(core -> Importing.core = core);
+    }
+
     @FXML
     ProgressBar blockProgress;
     @FXML
@@ -68,10 +69,110 @@ public class Importing implements ApplicationScene {
     Hyperlink version;
     @FXML
     Label statusLabel;
+    private double progress = 0f;
+    private AtomicInteger totalBlocksImported = new AtomicInteger(0);
+    private AtomicInteger totalTxImported = new AtomicInteger(0);
+    private AtomicLong blocksLeftToImport = new AtomicLong(0L);
+    private AtomicInteger importedThisSec = new AtomicInteger(0);
+    private AtomicBoolean synced = new AtomicBoolean(false);
+    private AtomicLong lastBlock = new AtomicLong(0);
+    private Future blockImport = Future.future();
+    private Future txImport = Future.future();
+    private List<String> deployments = new ArrayList<>();
+    private ApplicationConfig config = ApplicationConfig.get();
+    private ImportListener blockListener = new ImportListener() {
 
-    static {
-        StartupListener.subscibe(core -> Importing.core = core);
-    }
+        @Override
+        public void onSourceDepleted() {
+            synced.set(true);
+            core.timer(BLOCK_WAIT_SHOW, done -> {
+                Platform.runLater(() -> {
+                    Form.fadeIn(loadingPane);
+                    loadingPane.setVisible(true);
+                    importingPane.setVisible(false);
+                    title.setText("Pending");
+                    statusLabel.setText("Waiting for block number " + (lastBlock.get() + 1) + " ..");
+                });
+            });
+        }
+
+        @Override
+        public void onImportStarted(String hash, Long number) {
+            if (synced.get()) {
+                Platform.runLater(() -> {
+                    loadingPane.setVisible(false);
+                    importingPane.setVisible(true);
+                });
+            }
+        }
+
+        @Override
+        public void onImported(String hash, Long number) {
+            lastBlock.set(number);
+            totalBlocksImported.incrementAndGet();
+            importedThisSec.incrementAndGet();
+            blocksLeftToImport.decrementAndGet();
+            Platform.runLater(() -> {
+                blockProgress.setProgress(getProgress(number));
+                blocksLeft.setText(blocksLeftToImport.get() + " blocks left");
+            });
+        }
+
+        private double getProgress(Long blockNumber) {
+            long startBlock = Long.parseLong(config.getStartBlock());
+            long blockEnd = Long.parseLong(config.getBlockEnd());
+            long total = blockEnd - startBlock;
+            long current = blockNumber - startBlock;
+
+            double progress = (current * 1.0 / total * 1.0);
+            if (progress > Importing.this.progress) {
+                // prevent the progress from jumping back when blocks are not imported in order.
+                Importing.this.progress = progress;
+                return progress;
+            } else {
+                return Importing.this.progress;
+            }
+        }
+
+        @Override
+        public void onQueueChanged(int queued) {
+            Platform.runLater(() -> blocksQueued.setText("Blocks queued: " + queued));
+        }
+
+        @Override
+        public void onFinished() {
+            blockImport.complete();
+        }
+
+        @Override
+        public void onError(Throwable e, String hash) {
+            blockImport.tryFail(e);
+        }
+    };
+    private ImportListener txListener = new ImportListener() {
+        @Override
+        public void onImported(String hash, Long number) {
+            totalTxImported.incrementAndGet();
+            Platform.runLater(() -> {
+
+            });
+        }
+
+        @Override
+        public void onQueueChanged(int queued) {
+            Platform.runLater(() -> txQueued.setText("Tx queued: " + queued));
+        }
+
+        @Override
+        public void onFinished() {
+            txImport.tryComplete();
+        }
+
+        @Override
+        public void onError(Throwable e, String hash) {
+            txImport.tryFail(e);
+        }
+    };
 
     @FXML
     public void cancelImport(Event event) {
@@ -140,103 +241,6 @@ public class Importing implements ApplicationScene {
                         totalTxImported.get(), config.getTxIndex()));
         cancelImport(null);
     }
-
-    private ImportListener blockListener = new ImportListener() {
-
-        @Override
-        public void onSourceDepleted() {
-            synced.set(true);
-            core.timer(BLOCK_WAIT_SHOW, done -> {
-                Platform.runLater(() -> {
-                    Form.fadeIn(loadingPane);
-                    loadingPane.setVisible(true);
-                    importingPane.setVisible(false);
-                    title.setText("Pending");
-                    statusLabel.setText("Waiting for block number " + (lastBlock.get() + 1) + " ..");
-                });
-            });
-        }
-
-        @Override
-        public void onImportStarted(String hash, Long number) {
-            if (synced.get()) {
-                Platform.runLater(() -> {
-                    loadingPane.setVisible(false);
-                    importingPane.setVisible(true);
-                });
-            }
-        }
-
-        @Override
-        public void onImported(String hash, Long number) {
-            lastBlock.set(number);
-            totalBlocksImported.incrementAndGet();
-            importedThisSec.incrementAndGet();
-            blocksLeftToImport.decrementAndGet();
-            Platform.runLater(() -> {
-                blockProgress.setProgress(getProgress(number));
-                blocksLeft.setText(blocksLeftToImport.get() + " blocks left");
-            });
-        }
-
-        private double getProgress(Long blockNumber) {
-            long startBlock = Long.parseLong(config.getStartBlock());
-            long blockEnd = Long.parseLong(config.getBlockEnd());
-            long total = blockEnd - startBlock;
-            long current = blockNumber - startBlock;
-
-            double progress = (current * 1.0 / total * 1.0);
-            if (progress > Importing.this.progress) {
-                // prevent the progress from jumping back when blocks are not imported in order.
-                Importing.this.progress = progress;
-                return progress;
-            } else {
-                return Importing.this.progress;
-            }
-        }
-
-        @Override
-        public void onQueueChanged(int queued) {
-            Platform.runLater(() -> blocksQueued.setText("Blocks queued: " + queued));
-        }
-
-        @Override
-        public void onFinished() {
-            blockImport.complete();
-        }
-
-        @Override
-        public boolean onError(Throwable e, String hash) {
-            blockImport.tryFail(e);
-            return true;
-        }
-    };
-
-    private ImportListener txListener = new ImportListener() {
-        @Override
-        public void onImported(String hash, Long number) {
-            totalTxImported.incrementAndGet();
-            Platform.runLater(() -> {
-
-            });
-        }
-
-        @Override
-        public void onQueueChanged(int queued) {
-            Platform.runLater(() -> txQueued.setText("Tx queued: " + queued));
-        }
-
-        @Override
-        public void onFinished() {
-            txImport.tryComplete();
-        }
-
-        @Override
-        public boolean onError(Throwable e, String hash) {
-            txImport.tryFail(e);
-            return true;
-        }
-    };
 
     @FXML
     private void openGithubRepo(Event event) {
