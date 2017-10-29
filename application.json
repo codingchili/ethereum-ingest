@@ -1,7 +1,7 @@
 {
   "startBlock" : "1964770",
   "blockEnd" : "1964900",
-  "storage" : "ELASTICSEARCH",
+  "storage" : "MONGODB",
   "ipc" : "\\\\.\\pipe\\geth.ipc",
   "os" : "WINDOWS",
   "txIndex" : "ether-tx-demo-iix",

@@ -21,6 +21,7 @@ public class Service implements CoreService {
         launcher().setApplication("Ethereum Ingest")
                 .setVersion("1.0.0")
                 .setAuthor("codingchili@github")
+                .setClustered(true)
                 .deployable(Service.class);
 
         LaunchContext context = new LaunchContext(args);

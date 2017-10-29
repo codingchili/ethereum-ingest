@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.codingchili.chili-core:core:1.0.8-SNAPSHOT'
+    compile 'com.github.codingchili.chili-core:core:1.0.9-SNAPSHOT'
     compile 'org.web3j:core:2.3.1'
 }
 
