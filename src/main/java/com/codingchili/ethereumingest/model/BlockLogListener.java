@@ -36,7 +36,7 @@ public class BlockLogListener implements ImportListener {
     public void onSourceDepleted() {
         logger.event("onBlockSynced")
                 .put("next", lastBlock.get() + 1)
-                .send("fully synchroized: waiting for next block.");
+                .send("fully synchronized: waiting for next block.");
     }
 
     @Override
