@@ -4,29 +4,31 @@ dist: trusty
 jdk: oraclejdk8
 install: true
 script:
-  - ./gradlew -version
-  - ./gradlew build
+- "./gradlew -version"
+- "./gradlew build"
 notifications:
   email: true
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
-deploy:
-  provider: releases
-  api_key:
-    secure: W9XJLLhuWj7f3/xcV8TYWVTrtoYi8iMQTcatwNR3I9nKmK05ywab/G+iD4anZJWyZrOtvuS0ztBrPQMiGGdEju1iMRkuFTlC0XJOAJNL60gGgeZ7ngpBV/RWEEqGcUw+CNXvVIkbox9uXK5qokw8PMB7osnjmRpyfmLIL2hbiYVzXN3S3iKGn8nO7evWIVYjhEcHcZSCMlcLviBWJgCVzBpofubTy6zOVIggRG17tJjfstDsoyjmCWoZA18ZlGftcvM1a60H5retY9k/qYYVT5EPTrDmLLAHLP7Vy2ScgfzCWcO9V9Q8/BgfEwlpQ4j7ngHWW8zIk3QCqPZ9iDiXTkok8qhMQTRKebIOXJGnaI9ZoT/WehL6mGhHW23Cvpp8ubDLSyFuv9ylfUk9drdshEP/b02dV2o3S06PYhjXFinoOBRXMkIHwX0QFt8W85OyOCjARpBR5qDyxH5gCxSpfFaoUG0/CdWWoKdXDlwaG3KNzyU2jsjGsI3Y73q2AE+9qc9tgHHheK2TIjJPRMkjy0bxRHmEnSMM3JsP+/vNJNEDnZFgMxpHcixMikVbxpBzcSFSnjQNZs1bETMaHmIsPX34w8ODwwd5XQCrZb0zJiqe8A7tlcjcY9izTJ7+2O2hl9Lq8DJCQNb0awWXbX+KYjHH9YG2eF5sXxPrLLWgX+k=
-  file_glob: true
-  file:
-    - build/libs/*
-  skip_cleanup: true
-  overwrite: true
-  on:
-    tags: true
 env:
   global:
-    - GRADLE_OPTS="-Xms256m"
-    - JDK_JAVA_OPTIONS='--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED'
+  - GRADLE_OPTS="-Xms256m"
+  - JDK_JAVA_OPTIONS='--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED
+    --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.net.dns=ALL-UNNAMED
+    --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED
+    --add-opens=java.base/sun.nio.ch=ALL-UNNAMED'
+deploy:
+  provider: releases
+  skip_cleanup: true
+  file_glob: true
+  api_key:
+    secure: fAre3r5zLkqvGn8QAUziAssINnvJrKA9cBbEAYXd+WCg7lggrEv3qFKXEH1NGY4JrInm/YNF5tQjbV8zDdjw366SbhNTi5ctZIwp0zfbg0bWAVK3D2mf4Wf4oSHIcMNk/ZoVYRaGHMNuOOx7t8Ajnzt6Ej6yRo1JYrbp8AUojjZUwMlGs0cPsO1BiSHMaaKfPGEtY4gIM3Aohdx5Yf8Jf41KmMn955GEIPTHXWPKGLQf0zwFKLz43XKVtJPR5z0EDmTp6ErXL9M2m9y37YD8xBGmjrI6FAKLnwm2pdFgiFPEHa8iZHQA9kuHpMenX7Q4m36hKHLYFHo0kPiG9j0ey3RdqnFDjuqdFE9msBJSAWkE/8UvVeMAXQDCFh1NEBHC0ps6jzVspnX4nLk07j0zZ6ijrqkvl4eQ7uBhQvYLMrhEWhU5hBJoJYUOq/i220090vq1zsqNC5oE+RKChd6SXH15BoG66FeTZ0GPhz9UoQIFKR85XMJMe+jUVHOxs80ROK7h2f6GYlJW9d+fsHUJqpGKRVtnNx3ISJm/oCWWBdXVXi2MLLPmKaTOgEOhRXmKD+XgeaZQ0S3Txd5X5kLASlZ7w9rK5kkd3QctdJ6KpQF8u6Tg5j8bC0VHTUWfXBaPtbP9Hfpw5mqCirfxLLpqsha6xpNeNfJvOAHs650j1SI=
+  file:
+    - build/libs/*
+  on:
+    tags: true
