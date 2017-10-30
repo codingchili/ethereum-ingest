@@ -21,7 +21,7 @@ deploy:
     secure: W9XJLLhuWj7f3/xcV8TYWVTrtoYi8iMQTcatwNR3I9nKmK05ywab/G+iD4anZJWyZrOtvuS0ztBrPQMiGGdEju1iMRkuFTlC0XJOAJNL60gGgeZ7ngpBV/RWEEqGcUw+CNXvVIkbox9uXK5qokw8PMB7osnjmRpyfmLIL2hbiYVzXN3S3iKGn8nO7evWIVYjhEcHcZSCMlcLviBWJgCVzBpofubTy6zOVIggRG17tJjfstDsoyjmCWoZA18ZlGftcvM1a60H5retY9k/qYYVT5EPTrDmLLAHLP7Vy2ScgfzCWcO9V9Q8/BgfEwlpQ4j7ngHWW8zIk3QCqPZ9iDiXTkok8qhMQTRKebIOXJGnaI9ZoT/WehL6mGhHW23Cvpp8ubDLSyFuv9ylfUk9drdshEP/b02dV2o3S06PYhjXFinoOBRXMkIHwX0QFt8W85OyOCjARpBR5qDyxH5gCxSpfFaoUG0/CdWWoKdXDlwaG3KNzyU2jsjGsI3Y73q2AE+9qc9tgHHheK2TIjJPRMkjy0bxRHmEnSMM3JsP+/vNJNEDnZFgMxpHcixMikVbxpBzcSFSnjQNZs1bETMaHmIsPX34w8ODwwd5XQCrZb0zJiqe8A7tlcjcY9izTJ7+2O2hl9Lq8DJCQNb0awWXbX+KYjHH9YG2eF5sXxPrLLWgX+k=
   file_glob: true
   file:
-    - build/distributions/*
+    - build/libs/*
   skip_cleanup: true
   overwrite: true
   on:
