@@ -1,29 +1,38 @@
 # ethereum-ingest [![Build Status](https://travis-ci.org/codingchili/ethereum-ingest.svg?branch=master)](https://travis-ci.org/codingchili/ethereum-ingest)
-Ingests blocks and transactions from the Ethereum blockchain into ElasticSearch, MongoDB, Hazelcast, CQEngine and SQLite!
+Imports blocks and transactions from the Ethereum blockchain into ElasticSearch, MongoDB, Hazelcast, CQEngine and SQLite!
+
+Demo video: [YouTube](https://www.youtube.com/watch?v=FFI9OnW9IuI)
 
 Tested with
 - ElasticSeach 5.6.2
-- MongoDB 3.10
+- MongoDB 3.4.10
 - HazelCast 3.6.3
 - geth 1.7.1.
 
+### Building
 Build with
 ```
-gradle jar
+./gradlew jar
 ```
 Requires chili-core through jitpack or local repo.
 
-Start geth with rpc enabled
+### Importing
+The first step is to start your ethereum IPC client, for geth use:
 ```
 geth --rpcapi personal,db,eth,net,web3 --rpc --testnet
 ```
 
-Run with
+Start the importer with:
 ```
-java -jar <filename>.jar
+java -jar <filename>.jar --import
+java -jar <filename>.jar --gui
+java -jar <filename>.jar --help
 ```
+* --import: starts an import using application.json.
+* --gui: starts the application with the graphical user interface.
 
-Set configuration in application.json.
+### Configuring
+Set configuration in application.json before running --import. WHen using the graphical application the configuration is saved automatically.
 
 Default configuration
 ```
@@ -56,3 +65,6 @@ os can be any of the following, required for ipc to work correctly
 - WINDOWS
 
 Imports can be executed multiple times over the same block range without resulting in duplicates.
+
+### Contributing
+Submit an issue or a PR ! :blue_heart:
