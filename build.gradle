@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
 
-project.version = "1.0.0-SNAPSHOT"
+project.version = "1.0.1-SNAPSHOT"
 project.group = 'com.codingchili.ethereumingest'
 
 sourceCompatibility = 1.8
@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.codingchili.chili-core:core:1.0.9-SNAPSHOT'
+    compile 'com.github.codingchili.chili-core:core:1.0.18-SNAPSHOT@jar'
     compile 'org.web3j:core:2.3.1'
 }
 

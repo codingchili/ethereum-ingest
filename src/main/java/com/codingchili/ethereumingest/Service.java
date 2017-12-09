@@ -19,7 +19,7 @@ public class Service implements CoreService {
     public static void main(String[] args) throws IOException {
         system().setHandlers(1).setListeners(1);
         launcher().setApplication("Ethereum Ingest")
-                .setVersion("1.0.0")
+                .setVersion("1.0.1")
                 .setAuthor("codingchili@github")
                 .setClustered(true)
                 .deployable(Service.class);

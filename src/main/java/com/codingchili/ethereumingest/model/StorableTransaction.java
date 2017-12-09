@@ -39,7 +39,7 @@ public class StorableTransaction extends Transaction implements Storable {
     }
 
     @Override
-    public String id() {
+    public String getId() {
         return getHash();
     }
 

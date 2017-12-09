@@ -81,7 +81,7 @@ public class ApplicationContext extends SystemContext {
 
         new StorageLoader<E>(context)
                 .withDB(index, index)
-                .withClass(storable)
+                .withValue(storable)
                 .withPlugin(config.getStoragePlugin())
                 .build((storage) -> {
                     if (storage.succeeded()) {

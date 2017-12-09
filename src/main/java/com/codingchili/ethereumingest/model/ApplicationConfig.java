@@ -104,8 +104,9 @@ public class ApplicationConfig implements Configurable {
     }
 
     @Override
-    public void setPath(String path) {
+    public ApplicationConfig setPath(String path) {
         ApplicationConfig.path = path;
+        return this;
     }
 
     public String getBlockIndex() {

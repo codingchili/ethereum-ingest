@@ -31,7 +31,7 @@ public class StorableBlock implements Storable {
     }
 
     @Override
-    public String id() {
+    public String getId() {
         return hash;
     }
 
