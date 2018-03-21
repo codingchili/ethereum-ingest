@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
 
-project.version = "1.0.1-SNAPSHOT"
+project.version = "1.0.2"
 project.group = 'com.codingchili.ethereumingest'
 
 sourceCompatibility = 1.8
@@ -12,7 +12,6 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-
 repositories {
     mavenLocal()
     maven { url 'https://jitpack.io' }
@@ -20,8 +19,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.codingchili.chili-core:core:1.0.18-SNAPSHOT@jar'
-    compile 'org.web3j:core:2.3.1'
+    compile 'com.github.codingchili.chili-core:core:1.0.22@jar'
+    compile 'org.web3j:core:3.3.1'
 }
 
 test {

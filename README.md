@@ -4,10 +4,10 @@ Imports blocks and transactions from the Ethereum blockchain into ElasticSearch,
 Demo video: [YouTube](https://www.youtube.com/watch?v=FFI9OnW9IuI)
 
 Tested with
-- ElasticSeach 5.6.2
+- ElasticSeach 6.2.3
 - MongoDB 3.4.10
 - HazelCast 3.6.3
-- geth 1.7.1.
+- geth 1.8.2
 
 ### Building
 Build with
