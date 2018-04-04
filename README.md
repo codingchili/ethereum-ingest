@@ -3,6 +3,8 @@ Imports blocks and transactions from the Ethereum blockchain into ElasticSearch,
 
 Demo video: [YouTube](https://www.youtube.com/watch?v=FFI9OnW9IuI)
 
+![ethereum ingest GUI](https://raw.githubusercontent.com/codingchili/ethereum-ingest/master/eth-ingest-gui.png)
+
 Tested with
 - ElasticSeach 6.2.3
 - MongoDB 3.4.10
