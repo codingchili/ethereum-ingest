@@ -109,14 +109,18 @@ public class BlockService implements Importer {
 
                         Supplier<EthBlock> chain = () -> {
                             DefaultBlockParameterNumber param = new DefaultBlockParameterNumber(Long.valueOf(blockNum + ""));
-                            // prevent json corruption over the ipc connection.
-                            synchronized (BlockService.class) {
                                 try {
-                                    return client.ethGetBlockByNumber(param, config.isTxImport()).send();
+                                    if (config.isTargetHttpNode()) {
+                                        return client.ethGetBlockByNumber(param, config.isTxImport()).send();
+                                    } else {
+                                        // prevent json corruption over the ipc connection.
+                                        synchronized (BlockService.class) {
+                                            return client.ethGetBlockByNumber(param, config.isTxImport()).send();
+                                        }
+                                    }
                                 } catch (IOException e) {
                                     onError(e);
                                     return null;
-                                }
                             }
                         };
 

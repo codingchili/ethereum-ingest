@@ -10,18 +10,18 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="294.0" prefWidth="600.0" styleClass="bordered-pane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.codingchili.ethereumingest.views.Splash">
    <children>
-      <ImageView fx:id="logo" fitHeight="47.0" fitWidth="52.0" layoutX="300.0" layoutY="124.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@logo.png" />
-         </image>
-      </ImageView>
-      <Label fx:id="title" contentDisplay="CENTER" layoutX="221.0" layoutY="26.0" prefHeight="53.0" prefWidth="186.0" text="Ethereum ingest" textAlignment="CENTER" textFill="#00000040">
+      <Label fx:id="title" contentDisplay="CENTER" layoutX="207.0" layoutY="26.0" prefHeight="53.0" prefWidth="186.0" text="Ethereum ingest" textAlignment="CENTER" textFill="#00000067">
          <font>
             <Font name="Agency FB" size="32.0" />
          </font>
       </Label>
-      <Label fx:id="version" blendMode="MULTIPLY" layoutX="304.0" layoutY="191.0" text="x.y.z" textFill="#ff1f8765" />
-      <Hyperlink id="bordered-pane" fx:id="author" layoutX="229.0" layoutY="257.0" onMouseClicked="#openGithubLink" text="An app by codingchili@github" />
-      <ProgressIndicator fx:id="loading" layoutX="281.0" layoutY="114.0" prefHeight="67.0" prefWidth="67.0" />
+      <Label fx:id="version" blendMode="MULTIPLY" layoutX="304.0" layoutY="191.0" text="x.y.z" textFill="#ff1f8765" visible="false" />
+      <Hyperlink id="bordered-pane" fx:id="author" layoutX="212.0" layoutY="257.0" onMouseClicked="#openGithubLink" prefHeight="23.0" prefWidth="205.0" text="An app by codingchili@github" textAlignment="CENTER" />
+      <ProgressIndicator fx:id="loading" layoutX="267.0" layoutY="114.0" prefHeight="67.0" prefWidth="67.0" />
+      <ImageView fx:id="logo" fitHeight="47.0" fitWidth="52.0" layoutX="286.0" layoutY="124.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@logo.png" />
+         </image>
+      </ImageView>
    </children>
 </Pane>

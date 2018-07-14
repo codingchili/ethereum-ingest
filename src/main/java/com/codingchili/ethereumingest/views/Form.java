@@ -11,6 +11,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
@@ -29,6 +30,7 @@ public class Form extends Application {
     static final int WIDTH = 600;
     static final int HEIGHT = 300;
     static final String CSS_FILE = "/style.css";
+    private static final String ICON_PNG = "/logo.png";
     private static final int FADE_IN_MS = 675;
     private static final String APP_TITLE = "Ethereum Ingest";
     private static double offsetX = 0;
@@ -112,12 +114,13 @@ public class Form extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         stage.setTitle(APP_TITLE);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setResizable(false);
         stage.centerOnScreen();
         Async.setStage(stage);
         Async.setScene(SPLASH_XML);
+        stage.getIcons().add(new Image(Form.class.getResourceAsStream(ICON_PNG)));
     }
 }
