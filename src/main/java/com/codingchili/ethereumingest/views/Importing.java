@@ -2,6 +2,7 @@ package com.codingchili.ethereumingest.views;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StartupListener;
+
 import com.codingchili.ethereumingest.importer.BlockService;
 import com.codingchili.ethereumingest.importer.TransactionService;
 import com.codingchili.ethereumingest.model.ApplicationConfig;
@@ -76,8 +77,7 @@ public class Importing implements ApplicationScene {
     private AtomicInteger importedThisSec = new AtomicInteger(0);
     private AtomicBoolean synced = new AtomicBoolean(false);
     private AtomicLong lastBlock = new AtomicLong(0);
-    private Future blockImport = Future.future();
-    private Future txImport = Future.future();
+    private Future<Void> blockImport = Future.future();
     private List<String> deployments = new ArrayList<>();
     private ApplicationConfig config = ApplicationConfig.get();
     private ImportListener blockListener = new ImportListener() {
@@ -91,6 +91,11 @@ public class Importing implements ApplicationScene {
                     loadingPane.setVisible(true);
                     importingPane.setVisible(false);
                     title.setText("Pending");
+
+                    if (lastBlock.get() == 0) {
+                        // if the start block is past the chain head, show the starting block instead of 1.
+                        lastBlock.set(Long.valueOf(config.getStartBlock()) - 1);
+                    }
                     statusLabel.setText("Waiting for block number " + (lastBlock.get() + 1) + " ..");
                 });
             });
@@ -109,6 +114,7 @@ public class Importing implements ApplicationScene {
         @Override
         public void onImported(String hash, Long number) {
             lastBlock.set(number);
+
             totalBlocksImported.incrementAndGet();
             importedThisSec.incrementAndGet();
             blocksLeftToImport.decrementAndGet();
@@ -149,13 +155,11 @@ public class Importing implements ApplicationScene {
             blockImport.tryFail(e);
         }
     };
+
     private ImportListener txListener = new ImportListener() {
         @Override
         public void onImported(String hash, Long number) {
             totalTxImported.incrementAndGet();
-            Platform.runLater(() -> {
-
-            });
         }
 
         @Override
@@ -165,12 +169,12 @@ public class Importing implements ApplicationScene {
 
         @Override
         public void onFinished() {
-            txImport.tryComplete();
+            //txImport.tryComplete();
         }
 
         @Override
         public void onError(Throwable e, String hash) {
-            txImport.tryFail(e);
+            blockImport.tryFail(e);
         }
     };
 
@@ -216,14 +220,7 @@ public class Importing implements ApplicationScene {
     }
 
     private void setupCompletionListeners() {
-        List<Future> futures = new ArrayList<>();
-        if (config.isTxImport()) {
-            futures.add(txImport);
-        }
-        if (config.isBlockImport()) {
-            futures.add(blockImport);
-        }
-        CompositeFuture.all(futures).setHandler(done -> {
+        blockImport.setHandler(done -> {
             if (done.succeeded()) {
                 finishWithSuccess();
             } else {
@@ -235,10 +232,22 @@ public class Importing implements ApplicationScene {
     }
 
     private void finishWithSuccess() {
-        Form.showInfoAlert("Success!",
-                format("Imported %d blocks into '%s'.\nImported %d transactions into '%s'.",
-                        totalBlocksImported.get(), config.getBlockIndex(),
-                        totalTxImported.get(), config.getTxIndex()));
+        // show block imported as 0 if block import is disabled.
+
+        StringBuilder message = new StringBuilder();
+
+        if (config.isBlockImport()) {
+            message.append(
+                    String.format("Imported %d blocks into '%s'.\n",
+                            totalBlocksImported.get(), config.getBlockIndex()));
+        }
+
+        if (config.isTxImport()) {
+            message.append(
+                    String.format("Imported %d transactions into '%s'.",
+                            totalTxImported.get(), config.getTxIndex()));
+        }
+        Form.showInfoAlert("Success!", message.toString());
         cancelImport(null);
     }
 

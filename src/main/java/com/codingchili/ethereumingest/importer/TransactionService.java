@@ -3,6 +3,7 @@ package com.codingchili.ethereumingest.importer;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.storage.AsyncStorage;
+
 import com.codingchili.ethereumingest.model.ApplicationConfig;
 import com.codingchili.ethereumingest.model.ImportListener;
 import com.codingchili.ethereumingest.model.Importer;
@@ -51,7 +52,7 @@ public class TransactionService implements Importer {
 
             if (done.succeeded()) {
                 storage = done.result();
-                context.bus().consumer(TX_ADDR, request -> {
+                context.bus().localConsumer(TX_ADDR, request -> {
                     Collection<StorableTransaction> txs = getTransactionList(request.body());
                     queue.getAndAdd(txs.size());
                     listener.onQueueChanged(queue.get());
@@ -76,6 +77,7 @@ public class TransactionService implements Importer {
             @Override
             public void onCompleted() {
                 request.reply(null);
+                listener.onFinished();
             }
 
             @Override
@@ -95,7 +97,6 @@ public class TransactionService implements Importer {
                     if (done.succeeded()) {
                         listener.onImported(tx.getHash(), tx.getBlockNumber().longValue());
                         request(1);
-                        listener.onFinished();
                     } else {
                         hash.set(tx.getHash());
                         onError(done.cause());

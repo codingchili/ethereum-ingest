@@ -23,8 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_TIME;
 import static com.codingchili.ethereumingest.importer.ApplicationContext.TX_ADDR;
@@ -44,6 +43,7 @@ public class BlockService implements Importer {
     private static final String BLOCK_RETRY_TIMER = "blockRetryTimer";
     private static final int ONE_MINUTE = 60000;
     private static final int ONE_SECOND = 1000;
+    private static final DeliveryOptions delivery = new DeliveryOptions().setSendTimeout(ONE_MINUTE);
     private AtomicBoolean stopping = new AtomicBoolean(false);
     private AtomicLong timerId = new AtomicLong(0);
     private AtomicInteger queue = new AtomicInteger(0);
@@ -94,47 +94,47 @@ public class BlockService implements Importer {
                         }
                     }
 
+                    Consumer<EthBlock> importer = eth -> {
+                        hash.set(eth.getBlock().getHash());
+                        startImport(eth).setHandler(imported -> {
+                            if (imported.succeeded()) {
+                                request(1);
+                            } else {
+                                onError(imported.cause());
+                            }
+                        });
+                    };
+
+                    Function<Integer, EthBlock> chain = blockNum -> {
+                        DefaultBlockParameterNumber param = new DefaultBlockParameterNumber(Long.valueOf(blockNum + ""));
+                        try {
+                            if (config.isTargetHttpNode()) {
+                                return client.ethGetBlockByNumber(param, config.isTxImport()).send();
+                            } else {
+                                // prevent json corruption over the ipc connection.
+                                synchronized (BlockService.class) {
+                                    return client.ethGetBlockByNumber(param, config.isTxImport()).send();
+                                }
+                            }
+                        } catch (IOException e) {
+                            onError(e);
+                            return null;
+                        }
+                    };
+
                     @Override
                     public void onNext(Integer blockNum) {
-                        Consumer<EthBlock> importer = eth -> {
-                            hash.set(eth.getBlock().getHash());
-                            startImport(eth).setHandler(done1 -> {
-                                if (done1.succeeded()) {
-                                    request(1);
-                                } else {
-                                    onError(done1.cause());
-                                }
-                            });
-                        };
-
-                        Supplier<EthBlock> chain = () -> {
-                            DefaultBlockParameterNumber param = new DefaultBlockParameterNumber(Long.valueOf(blockNum + ""));
-                                try {
-                                    if (config.isTargetHttpNode()) {
-                                        return client.ethGetBlockByNumber(param, config.isTxImport()).send();
-                                    } else {
-                                        // prevent json corruption over the ipc connection.
-                                        synchronized (BlockService.class) {
-                                            return client.ethGetBlockByNumber(param, config.isTxImport()).send();
-                                        }
-                                    }
-                                } catch (IOException e) {
-                                    onError(e);
-                                    return null;
-                            }
-                        };
-
                         // avoid blocking the event loop while waiting for the ipc.
                         context.blocking(exec -> {
                             if (!stopping.get()) {
-                                EthBlock event = chain.get();
+                                EthBlock event = chain.apply(blockNum);
                                 if (event.getBlock() == null) {
                                     listener.onSourceDepleted();
 
                                     // block does not exist yet, wait a bit.
                                     context.periodic(() -> ONE_SECOND, BLOCK_RETRY_TIMER, done -> {
                                         timerId.set(done);
-                                        EthBlock retry = chain.get();
+                                        EthBlock retry = chain.apply(blockNum);
                                         if (retry.getBlock() != null) {
                                             context.cancel(done);
                                             importer.accept(retry);
@@ -143,9 +143,11 @@ public class BlockService implements Importer {
                                 } else {
                                     importer.accept(event);
                                 }
-                                exec.complete();
                             }
+                            exec.complete();
+
                         }, (done) -> {
+                            //
                         });
                     }
                 });
@@ -164,19 +166,19 @@ public class BlockService implements Importer {
         stop.complete();
     }
 
-    private CompositeFuture startImport(EthBlock fullBlock) {
-        StorableBlock block = new StorableBlock(fullBlock.getBlock());
+    private CompositeFuture startImport(EthBlock blockToImport) {
+        StorableBlock block = new StorableBlock(blockToImport.getBlock());
         listener.onImportStarted(block.getHash(), block.getNumber());
         return CompositeFuture.all(
-                importBlocks(block),
-                importTx(block, getTransactionList(fullBlock))
+                importBlock(block),
+                importTx(block, getTransactionList(blockToImport))
         );
     }
 
-    private Future<Void> importBlocks(StorableBlock block) {
+    private Future<Void> importBlock(StorableBlock block) {
         Future<Void> future = Future.future();
 
-        if (config.isTxImport()) {
+        if (config.isBlockImport()) {
             listener.onQueueChanged(queue.incrementAndGet());
 
             storage.put(block, done -> {
@@ -198,7 +200,6 @@ public class BlockService implements Importer {
 
     private Future<Void> importTx(StorableBlock block, JsonObject transactions) {
         Future<Void> future = Future.future();
-        DeliveryOptions delivery = new DeliveryOptions().setSendTimeout(ONE_MINUTE);
 
         if (config.isTxImport()) {
             context.bus().send(TX_ADDR, transactions, delivery, done -> {
