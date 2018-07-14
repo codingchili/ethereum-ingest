@@ -4,9 +4,16 @@
 }
 
 .root {
-	-fx-body-color : #F5F5F5;
-	-fx-outer-border : #cecece;
+	-fx-body-color : #ffffff;
+	-fx-outer-border : #ebebeb;
 }
+
+.bordered-pane {
+	 -fx-border-width: 1px;
+	 -fx-border-style: solid;
+	 -fx-border-color: rgba(170, 0, 58, 0.51);
+ }
+
 .button:focused, .toggle-button:focused,
 .split-menu-button:focused, .menu-button:focused,
 .number-button:focused,

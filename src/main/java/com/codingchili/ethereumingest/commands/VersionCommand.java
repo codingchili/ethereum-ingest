@@ -1,7 +1,6 @@
 package com.codingchili.ethereumingest.commands;
 
-import com.codingchili.core.context.Command;
-import com.codingchili.core.context.CommandExecutor;
+import com.codingchili.core.context.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import io.vertx.core.Future;
 
@@ -15,9 +14,9 @@ import static com.codingchili.core.files.Configurations.launcher;
 public class VersionCommand implements Command {
 
     @Override
-    public void execute(Future<Boolean> future, CommandExecutor executor) {
+    public void execute(Future<CommandResult> future, CommandExecutor executor) {
         new ConsoleLogger(getClass()).log("Current version is " + launcher().getVersion());
-        future.complete(true);
+        future.complete(CommandResult.SHUTDOWN);
     }
 
     @Override

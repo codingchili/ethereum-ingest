@@ -1,7 +1,7 @@
 package com.codingchili.ethereumingest.commands;
 
-import com.codingchili.core.context.Command;
-import com.codingchili.core.context.CommandExecutor;
+import com.codingchili.core.context.*;
+
 import com.codingchili.ethereumingest.views.Form;
 import io.vertx.core.Future;
 
@@ -14,9 +14,9 @@ import static com.codingchili.core.configuration.CoreStrings.getCommand;
 public class GUICommand implements Command {
 
     @Override
-    public void execute(Future<Boolean> future, CommandExecutor executor) {
+    public void execute(Future<CommandResult> future, CommandExecutor executor) {
         new Form().start();
-        future.complete(false);
+        future.complete(CommandResult.CONTINUE);
     }
 
     @Override

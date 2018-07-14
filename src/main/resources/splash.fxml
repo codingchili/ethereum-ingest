@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="294.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.codingchili.ethereumingest.views.Splash">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="294.0" prefWidth="600.0" styleClass="bordered-pane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.codingchili.ethereumingest.views.Splash">
    <children>
-      <Label fx:id="title" contentDisplay="CENTER" layoutX="188.0" layoutY="74.0" prefHeight="47.0" prefWidth="236.0" text="Ethereum ingest" textAlignment="CENTER">
+      <ImageView fx:id="logo" fitHeight="47.0" fitWidth="52.0" layoutX="300.0" layoutY="124.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@logo.png" />
+         </image>
+      </ImageView>
+      <Label fx:id="title" contentDisplay="CENTER" layoutX="221.0" layoutY="26.0" prefHeight="53.0" prefWidth="186.0" text="Ethereum ingest" textAlignment="CENTER" textFill="#00000040">
          <font>
-            <Font size="32.0" />
+            <Font name="Agency FB" size="32.0" />
          </font>
       </Label>
-      <Label fx:id="version" layoutX="288.0" layoutY="139.0" text="x.y.z" />
-      <Hyperlink fx:id="author" layoutX="221.0" layoutY="257.0" onMouseClicked="#openGithubLink" text="An app by codingchili@github" />
-      <ProgressIndicator fx:id="loading" layoutX="274.0" layoutY="170.0" />
+      <Label fx:id="version" blendMode="MULTIPLY" layoutX="304.0" layoutY="191.0" text="x.y.z" textFill="#ff1f8765" />
+      <Hyperlink id="bordered-pane" fx:id="author" layoutX="229.0" layoutY="257.0" onMouseClicked="#openGithubLink" text="An app by codingchili@github" />
+      <ProgressIndicator fx:id="loading" layoutX="281.0" layoutY="114.0" prefHeight="67.0" prefWidth="67.0" />
    </children>
 </Pane>

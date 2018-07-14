@@ -46,7 +46,7 @@ public class Importing implements ApplicationScene {
     private static CoreContext core;
 
     static {
-        StartupListener.subscibe(core -> Importing.core = core);
+        StartupListener.subscribe(core -> Importing.core = core);
     }
 
     @FXML

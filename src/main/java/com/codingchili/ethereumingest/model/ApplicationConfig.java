@@ -29,7 +29,7 @@ public class ApplicationConfig implements Configurable {
     private String startBlock = "0";
     private String blockEnd = "1500";
     private StorageType storage = ELASTICSEARCH;
-    private String ipc = "\\\\.\\pipe\\geth.ipc";
+    private String targetNode = "\\\\.\\pipe\\geth.ipc"; // OR http://localhost:8545/
     private OSType os = WINDOWS;
     private String txIndex = "eth-tx";
     private String blockIndex = "eth-block";
@@ -66,12 +66,12 @@ public class ApplicationConfig implements Configurable {
         this.blockEnd = blockEnd;
     }
 
-    public String getIpc() {
-        return ipc;
+    public String getTargetNode() {
+        return targetNode;
     }
 
-    public void setIpc(String ipc) {
-        this.ipc = ipc;
+    public void setTargetNode(String targetNode) {
+        this.targetNode = targetNode;
     }
 
     public OSType getOs() {
@@ -156,6 +156,11 @@ public class ApplicationConfig implements Configurable {
 
     public void setBackPressureTx(Long backPressureTx) {
         this.backPressureTx = backPressureTx;
+    }
+
+    @JsonIgnore
+    public boolean isTargetHttpNode() {
+        return targetNode.startsWith("http");
     }
 
     public enum OSType {

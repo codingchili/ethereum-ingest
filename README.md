@@ -40,7 +40,7 @@ Default configuration
   "startBlock" : "1964770",
   "blockEnd" : "1964900",
   "storage" : "ELASTICSEARCH",
-  "ipc" : "\\\\.\\pipe\\geth.ipc",
+  "targetNode" : "\\\\.\\pipe\\geth.targetNode",
   "os" : "WINDOWS",
   "txIndex" : "ether-tx-demo-iix",
   "blockIndex" : "etdder-block-demo-iix",
@@ -60,7 +60,7 @@ Storage can be any of the following
 - SQLITE
 - MEMORY
 
-os can be any of the following, required for ipc to work correctly
+os can be any of the following, required for targetNode to work correctly
 - UNIX
 - WINDOWS
 

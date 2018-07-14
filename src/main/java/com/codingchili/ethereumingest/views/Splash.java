@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.image.ImageView;
 
 import java.awt.*;
 import java.io.IOException;
@@ -30,6 +31,8 @@ public class Splash implements ApplicationScene {
     Hyperlink author;
     @FXML
     ProgressIndicator loading;
+    @FXML
+    ImageView logo;
 
     @FXML
     private void openGithubLink(Event event) {
@@ -49,13 +52,22 @@ public class Splash implements ApplicationScene {
         title.setText(launcher().getApplication());
         author.setText("An app by " + launcher().getAuthor());
 
-        StartupListener.subscibe(core -> {
+        logo.setOpacity(0.24);
+        StartupListener.subscribe(core -> {
             Async.onExecutor(() -> {
                 Platform.runLater(() -> {
                     loading.setVisible(false);
                 });
             });
-            Async.timer(2350, () -> {
+            // fade in the logo when loading is complete.
+            Async.periodic(16, () -> {
+                logo.setOpacity(logo.getOpacity() + 0.016);
+                if (logo.getOpacity() > 1.0) {
+                    logo.setOpacity(1.0);
+                }
+            });
+            // wait some additional time to make sure that the splash is shown for a bit.
+            Async.timer(1250, () -> {
                 Async.setScene(SETTINGS_FXML);
             });
         });

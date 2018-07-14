@@ -22,7 +22,7 @@ public class Async {
     private static CoreContext core;
 
     static {
-        StartupListener.subscibe(core -> Async.core = core);
+        StartupListener.subscribe(core -> Async.core = core);
     }
 
     public static void setScene(String xml) {

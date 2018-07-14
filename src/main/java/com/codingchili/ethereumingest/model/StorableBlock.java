@@ -30,6 +30,8 @@ public class StorableBlock implements Storable {
         this.txcount = block.getTransactions().size();
     }
 
+    public StorableBlock() {}
+
     @Override
     public String getId() {
         return hash;

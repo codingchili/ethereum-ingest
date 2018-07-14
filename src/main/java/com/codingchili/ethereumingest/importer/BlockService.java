@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_TIME;
 import static com.codingchili.ethereumingest.importer.ApplicationContext.TX_ADDR;
-import static com.codingchili.ethereumingest.importer.ApplicationContext.getIpcClient;
+import static com.codingchili.ethereumingest.importer.ApplicationContext.getTargetNode;
 
 /**
  * A service that reads block data from an Ethereum client IPC connection.
@@ -68,7 +68,7 @@ public class BlockService implements Importer {
             if (done.succeeded()) {
                 future.complete();
                 storage = done.result();
-                Web3j client = getIpcClient();
+                Web3j client = getTargetNode();
                 Integer start = Integer.parseInt(config.getStartBlock());
                 Integer end = Integer.parseInt(config.getBlockEnd());
 

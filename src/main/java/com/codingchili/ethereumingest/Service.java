@@ -16,10 +16,10 @@ import static com.codingchili.core.files.Configurations.system;
  */
 public class Service implements CoreService {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         system().setHandlers(1).setListeners(1);
         launcher().setApplication("Ethereum Ingest")
-                .setVersion("1.0.1")
+                .setVersion("1.0.3")
                 .setAuthor("codingchili@github")
                 .setClustered(true)
                 .deployable(Service.class);

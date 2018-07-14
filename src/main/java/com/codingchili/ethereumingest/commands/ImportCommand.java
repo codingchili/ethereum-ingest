@@ -1,8 +1,6 @@
 package com.codingchili.ethereumingest.commands;
 
-import com.codingchili.core.context.Command;
-import com.codingchili.core.context.CommandExecutor;
-import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.*;
 import com.codingchili.core.listener.CoreService;
 import com.codingchili.ethereumingest.importer.BlockService;
 import com.codingchili.ethereumingest.importer.TransactionService;
@@ -21,9 +19,9 @@ public class ImportCommand implements Command, CoreService {
     private CoreContext core;
 
     @Override
-    public void execute(Future<Boolean> future, CommandExecutor executor) {
+    public void execute(Future<CommandResult> future, CommandExecutor executor) {
         launcher().deployable(ImportCommand.class);
-        future.complete(false);
+        future.complete(CommandResult.CONTINUE);
     }
 
     @Override

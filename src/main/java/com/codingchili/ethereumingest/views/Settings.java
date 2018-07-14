@@ -49,6 +49,7 @@ public class Settings implements ApplicationScene {
     ComboBox<String> storageType;
     @FXML
     Label title;
+
     private ApplicationConfig config = ApplicationConfig.get();
 
     @Override
@@ -63,7 +64,7 @@ public class Settings implements ApplicationScene {
         txIndex.setText(config.getTxIndex());
         importTx.setSelected(config.isTxImport());
         importBlocks.setSelected(config.isBlockImport());
-        endpoint.setText(config.getIpc());
+        endpoint.setText(config.getTargetNode());
         storageType.setItems(FXCollections.observableList(getStorageList()));
         storageType.getSelectionModel().select(config.getStorage().name());
 
@@ -92,7 +93,7 @@ public class Settings implements ApplicationScene {
         config.setTxIndex(txIndex.getText());
         config.setBlockImport(importBlocks.isSelected());
         config.setTxImport(importTx.isSelected());
-        config.setIpc(endpoint.getText());
+        config.setTargetNode(endpoint.getText());
         config.setStorage(
                 ApplicationConfig.StorageType.valueOf(
                         storageType.getSelectionModel().getSelectedItem()));
