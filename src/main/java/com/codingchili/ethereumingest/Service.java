@@ -18,7 +18,7 @@ public class Service implements CoreService {
     public static void main(String[] args) {
         system().setHandlers(1).setListeners(1);
         launcher().setApplication("Ethereum Ingest")
-                .setVersion("1.0.3")
+                .setVersion("1.1.0")
                 .setAuthor("codingchili@github")
                 .setClustered(true)
                 .deployable(Service.class);
