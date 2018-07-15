@@ -51,7 +51,6 @@ public class ApplicationContext extends SystemContext {
     private void connectUsingHttp(String endpoint) {
         logger.log("Connecting to " + endpoint + " using http..");
         node = Web3j.build(new HttpService(endpoint));
-        logger.log("Successfully connected to a remote node.");
     }
 
     private void connectUsingIpc(String endpoint) {
@@ -61,7 +60,6 @@ public class ApplicationContext extends SystemContext {
         } else {
             node = Web3j.build(new UnixIpcService(endpoint));
         }
-        logger.log("Successfully connected to ipc, waiting for blocks..");
     }
 
     /**
