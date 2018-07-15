@@ -6,7 +6,7 @@ Demo video: [YouTube](https://www.youtube.com/watch?v=FFI9OnW9IuI)
 Tested with
 - ElasticSeach 6.3.1
 - MongoDB 3.4.10
-- HazelCast 3.8.2
+- Hazelcast 3.8.2
 - geth 1.8.12.
 
 ### Building
