@@ -1,8 +1,5 @@
 package com.codingchili.ethereumingest.views;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.StartupListener;
-
 import com.codingchili.ethereumingest.importer.BlockService;
 import com.codingchili.ethereumingest.importer.TransactionService;
 import com.codingchili.ethereumingest.model.ApplicationConfig;
@@ -12,25 +9,23 @@ import io.vertx.core.Future;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.control.Hyperlink;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.Pane;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.*;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.StartupListener;
 
 import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.ethereumingest.views.Settings.SETTINGS_FXML;
-import static java.lang.String.format;
 
 /**
  * View that is visible when importing.
