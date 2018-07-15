@@ -1,14 +1,13 @@
 package com.codingchili.ethereumingest;
 
-import com.codingchili.core.context.LaunchContext;
-import com.codingchili.core.listener.CoreService;
 import com.codingchili.ethereumingest.commands.CommandLine;
 import io.vertx.core.Future;
 
-import java.io.IOException;
+import com.codingchili.core.context.LaunchContext;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.listener.CoreService;
 
-import static com.codingchili.core.files.Configurations.launcher;
-import static com.codingchili.core.files.Configurations.system;
+import static com.codingchili.core.files.Configurations.*;
 
 /**
  * Application entry point, starts up the framework and parses the
@@ -23,6 +22,9 @@ public class Service implements CoreService {
                 .setAuthor("codingchili@github")
                 .setClustered(true)
                 .deployable(Service.class);
+
+        // make sure configuration file for storage is available.
+        Configurations.storage().save();
 
         LaunchContext context = new LaunchContext(args);
         context.setCommandExecutor(CommandLine.get()).start();

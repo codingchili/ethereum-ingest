@@ -4,10 +4,10 @@ Imports blocks and transactions from the Ethereum blockchain into ElasticSearch,
 Demo video: [YouTube](https://www.youtube.com/watch?v=FFI9OnW9IuI)
 
 Tested with
-- ElasticSeach 5.6.2
+- ElasticSeach 6.3.1
 - MongoDB 3.4.10
-- HazelCast 3.6.3
-- geth 1.7.1.
+- HazelCast 3.8.2
+- geth 1.8.12.
 
 ### Building
 Build with
@@ -54,10 +54,10 @@ Backpressure for blocks and tx should not exceed 200 when multiplied with eachot
 increase these values further you need to make sure the storage is capable of handling that many connections.
 
 Storage can be any of the following
-- MONGODB
-- ELASTICSEARCH
+- MONGODB (default: localhost:27017)
+- ELASTICSEARCH (default: localhost:9300)
 - HAZELCAST
-- SQLITE
+- SQLITE (CQEngine)
 - MEMORY
 
 os can be any of the following, required for targetNode to work correctly
@@ -65,6 +65,19 @@ os can be any of the following, required for targetNode to work correctly
 - WINDOWS
 
 Imports can be executed multiple times over the same block range without resulting in duplicates.
+
+To configure a custom host:port for MongoDB or ElasticSearch please add/edit this file in "conf/system/storage.yaml"
+
+```
+---
+storage:
+  com.codingchili.core.storage.MongoDBMap:
+    host: "localhost"
+    port: 27017
+  com.codingchili.core.storage.ElasticMap:
+    host: "localhost"
+    port: 27017
+```
 
 ### Contributing
 Submit an issue or a PR ! :blue_heart:

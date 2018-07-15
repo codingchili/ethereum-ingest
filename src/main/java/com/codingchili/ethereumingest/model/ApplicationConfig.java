@@ -18,7 +18,7 @@ import static com.codingchili.ethereumingest.model.ApplicationConfig.StorageType
  * Changes to the import settings in the GUI will be persisted to disk.
  */
 public class ApplicationConfig implements Configurable {
-    private static String path = "application.json";
+    private static String path = "application.yaml";
 
     static {
         // required to prevent a collision between vert.x and eleasticsearch connector
