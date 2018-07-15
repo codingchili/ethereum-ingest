@@ -2,10 +2,10 @@
 startBlock: "64500"
 blockEnd: "66500"
 storage: "ELASTICSEARCH"
-targetNode: "http://192.168.10.129:32773/"
+targetNode: "http://localhost:8545/"
 os: "WINDOWS"
-txIndex: "ether-trans4"
-blockIndex: "eth-blocks"
+txIndex: "ether-tx"
+blockIndex: "ether-blocks"
 backpressureBlocks: 8
 backPressureTx: 20
 txImport: true
