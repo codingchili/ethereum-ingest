@@ -1,5 +1,5 @@
 # ethereum-ingest [![Build Status](https://travis-ci.org/codingchili/ethereum-ingest.svg?branch=master)](https://travis-ci.org/codingchili/ethereum-ingest)
-Imports blocks and transactions from the Ethereum blockchain into ElasticSearch, MongoDB, Hazelcast, CQEngine and SQLite!
+Imports blocks and transactions from the Ethereum blockchain into ElasticSearch, MongoDB, Hazelcast, CQEngine and SQLite! Works with Geth IPC, Geth REST API and Infura.
 
 Demo video: [YouTube](https://www.youtube.com/watch?v=FFI9OnW9IuI)
 
