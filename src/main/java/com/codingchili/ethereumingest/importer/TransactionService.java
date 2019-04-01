@@ -9,11 +9,12 @@ import com.codingchili.ethereumingest.model.ImportListener;
 import com.codingchili.ethereumingest.model.Importer;
 import com.codingchili.ethereumingest.model.StorableTransaction;
 import com.codingchili.ethereumingest.model.TransactionLogListener;
+import io.reactivex.Flowable;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-import rx.Observable;
-import rx.Subscriber;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +29,7 @@ import static com.codingchili.ethereumingest.importer.ApplicationContext.timesta
 /**
  * A service that receives a list of transactions from each block retrieved from the
  * ipc connection in #{@link BlockService}. This service is only used if
- * #{@link ApplicationConfig#txImport} is set to true.
+ * #{@link ApplicationConfig#isTxImport()} is set to true.
  */
 public class TransactionService implements Importer {
     private AtomicInteger queue = new AtomicInteger(0);
@@ -68,23 +69,27 @@ public class TransactionService implements Importer {
     private void importTx(Message<?> request, Collection<StorableTransaction> list) {
         final AtomicReference<String> hash = new AtomicReference<>();
 
-        Observable.from(list).subscribe(new Subscriber<StorableTransaction>() {
-            @Override
-            public void onStart() {
-                request(config.getBackPressureTx());
-            }
+        Flowable.fromIterable(list).subscribe(new Subscriber<>() {
+            private Subscription subscription;
+
 
             @Override
-            public void onCompleted() {
-                request.reply(null);
-                listener.onFinished();
+            public void onSubscribe(Subscription subscription) {
+                this.subscription = subscription;
+                subscription.request(config.getBackPressureTx());
             }
 
             @Override
             public void onError(Throwable e) {
                 listener.onError(e, hash.get());
                 request.reply(e);
-                unsubscribe();
+                subscription.cancel();
+            }
+
+            @Override
+            public void onComplete() {
+                request.reply(null);
+                listener.onFinished();
             }
 
             @Override
@@ -96,7 +101,7 @@ public class TransactionService implements Importer {
 
                     if (done.succeeded()) {
                         listener.onImported(tx.getHash(), tx.getBlockNumber().longValue());
-                        request(1);
+                        subscription.request(1);
                     } else {
                         hash.set(tx.getHash());
                         onError(done.cause());

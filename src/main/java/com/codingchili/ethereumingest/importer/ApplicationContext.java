@@ -42,7 +42,7 @@ public class ApplicationContext extends SystemContext {
                 connectUsingIpc(endpoint);
             }
 
-            node.ethSyncing().observable().subscribe(is -> {
+            node.ethSyncing().flowable().subscribe(is -> {
                 logger.event("synchronizing").put("is", is.isSyncing()).send();
             });
         }

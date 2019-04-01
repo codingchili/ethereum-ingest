@@ -8,22 +8,24 @@ import com.codingchili.ethereumingest.model.BlockLogListener;
 import com.codingchili.ethereumingest.model.ImportListener;
 import com.codingchili.ethereumingest.model.Importer;
 import com.codingchili.ethereumingest.model.StorableBlock;
+import io.reactivex.Flowable;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.response.EthBlock;
-import rx.Observable;
-import rx.Subscriber;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_TIME;
 import static com.codingchili.ethereumingest.importer.ApplicationContext.TX_ADDR;
@@ -32,11 +34,11 @@ import static com.codingchili.ethereumingest.importer.ApplicationContext.getTarg
 /**
  * A service that reads block data from an Ethereum client IPC connection.
  * <p>
- * If #{@link ApplicationConfig#txImport} is set to true will request full
+ * If #{@link ApplicationConfig#isTxImport()} is set to true will request full
  * transaction details in each block. The transaction data is forwarded to
  * another handler that imports the transactions into the configured storage.
  * <p>
- * If #{@link ApplicationConfig#blockImport} this service will also import
+ * If #{@link ApplicationConfig#isBlockImport()} this service will also import
  * block data into the configured storage.
  */
 public class BlockService implements Importer {
@@ -72,55 +74,15 @@ public class BlockService implements Importer {
                 Integer start = Integer.parseInt(config.getStartBlock());
                 Integer end = Integer.parseInt(config.getBlockEnd());
 
-                Observable.range(start, end - start).subscribe(new Subscriber<Integer>() {
+                Flowable.range(start, end - start).subscribe(new Subscriber<>() {
                     final AtomicReference<String> hash = new AtomicReference<>();
+                    private Subscription subscription;
 
                     @Override
-                    public void onStart() {
-                        request(config.getBackpressureBlocks());
+                    public void onSubscribe(Subscription subscription) {
+                        this.subscription = subscription;
+                        subscription.request(config.getBackpressureBlocks());
                     }
-
-                    @Override
-                    public void onCompleted() {
-                        listener.onFinished();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (!stopping.get()) {
-                            listener.onError(e, hash.get());
-                            unsubscribe();
-                            stopping.set(true);
-                        }
-                    }
-
-                    Consumer<EthBlock> importer = eth -> {
-                        hash.set(eth.getBlock().getHash());
-                        startImport(eth).setHandler(imported -> {
-                            if (imported.succeeded()) {
-                                request(1);
-                            } else {
-                                onError(imported.cause());
-                            }
-                        });
-                    };
-
-                    Function<Integer, EthBlock> chain = blockNum -> {
-                        DefaultBlockParameterNumber param = new DefaultBlockParameterNumber(Long.valueOf(blockNum + ""));
-                        try {
-                            if (config.isTargetHttpNode()) {
-                                return client.ethGetBlockByNumber(param, config.isTxImport()).send();
-                            } else {
-                                // prevent json corruption over the ipc connection.
-                                synchronized (BlockService.class) {
-                                    return client.ethGetBlockByNumber(param, config.isTxImport()).send();
-                                }
-                            }
-                        } catch (IOException e) {
-                            onError(e);
-                            return null;
-                        }
-                    };
 
                     @Override
                     public void onNext(Integer blockNum) {
@@ -150,6 +112,48 @@ public class BlockService implements Importer {
                             //
                         });
                     }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        if (!stopping.get()) {
+                            listener.onError(throwable, hash.get());
+                            subscription.cancel();
+                            stopping.set(true);
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        listener.onFinished();
+                    }
+
+                    Consumer<EthBlock> importer = eth -> {
+                        hash.set(eth.getBlock().getHash());
+                        startImport(eth).setHandler(imported -> {
+                            if (imported.succeeded()) {
+                                subscription.request(1);
+                            } else {
+                                onError(imported.cause());
+                            }
+                        });
+                    };
+
+                    Function<Integer, EthBlock> chain = blockNum -> {
+                        DefaultBlockParameterNumber param = new DefaultBlockParameterNumber(Long.valueOf(blockNum + ""));
+                        try {
+                            if (config.isTargetHttpNode()) {
+                                return client.ethGetBlockByNumber(param, config.isTxImport()).send();
+                            } else {
+                                // prevent json corruption over the ipc connection.
+                                synchronized (BlockService.class) {
+                                    return client.ethGetBlockByNumber(param, config.isTxImport()).send();
+                                }
+                            }
+                        } catch (IOException e) {
+                            onError(e);
+                            return null;
+                        }
+                    };
                 });
             } else {
                 future.fail(done.cause());
