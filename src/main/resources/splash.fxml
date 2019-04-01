@@ -8,16 +8,16 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="294.0" prefWidth="600.0" styleClass="bordered-pane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.codingchili.ethereumingest.views.Splash">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="294.0" prefWidth="600.0" styleClass="bordered-pane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.codingchili.ethereumingest.views.Splash">
    <children>
-      <Label fx:id="title" contentDisplay="CENTER" layoutX="207.0" layoutY="26.0" prefHeight="53.0" prefWidth="186.0" text="Ethereum ingest" textAlignment="CENTER" textFill="#00000067">
+      <Label fx:id="title" alignment="TOP_CENTER" contentDisplay="CENTER" layoutX="1.0" layoutY="26.0" prefHeight="53.0" prefWidth="600.0" text="Ethereum ingest" textAlignment="CENTER" textFill="#00000067">
          <font>
             <Font name="Agency FB" size="32.0" />
          </font>
       </Label>
       <Label fx:id="version" blendMode="MULTIPLY" layoutX="304.0" layoutY="191.0" text="x.y.z" textFill="#ff1f8765" visible="false" />
       <Hyperlink id="bordered-pane" fx:id="author" layoutX="212.0" layoutY="257.0" onMouseClicked="#openGithubLink" prefHeight="23.0" prefWidth="205.0" text="An app by codingchili@github" textAlignment="CENTER" />
-      <ProgressIndicator fx:id="loading" layoutX="267.0" layoutY="114.0" prefHeight="67.0" prefWidth="67.0" />
+      <ProgressIndicator fx:id="loading" layoutX="274.0" layoutY="122.0" prefHeight="67.0" prefWidth="67.0" />
       <ImageView fx:id="logo" fitHeight="47.0" fitWidth="52.0" layoutX="286.0" layoutY="124.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@logo.png" />
