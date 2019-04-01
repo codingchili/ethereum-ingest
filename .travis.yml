@@ -1,14 +1,15 @@
 language: java
 os:
   - linux
-  - windows
 sudo: false
 dist: trusty
 jdk: oraclejdk11
 install: true
 script:
   - "./gradlew -version"
-  - "./gradlew build"
+  - "./gradlew build -Pplatform=win"
+  - "./gradlew build -Pplatform=linux"
+  - "./gradlew build -Pplatform=mac"
 notifications:
   email: false
 before_cache:

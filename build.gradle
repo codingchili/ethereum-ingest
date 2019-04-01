@@ -20,13 +20,16 @@ repositories {
 
 // https://stackoverflow.com/a/52615808
 def currentOS = org.gradle.internal.os.OperatingSystem.current()
-def platform
-if (currentOS.isWindows()) {
-    platform = 'win'
-} else if (currentOS.isLinux()) {
-    platform = 'linux'
-} else if (currentOS.isMacOsX()) {
-    platform = 'mac'
+def platform = project.platform
+
+if (!platform) {
+    if (currentOS.isWindows()) {
+        platform = 'win'
+    } else if (currentOS.isLinux()) {
+        platform = 'linux'
+    } else if (currentOS.isMacOsX()) {
+        platform = 'mac'
+    }
 }
 
 dependencies {

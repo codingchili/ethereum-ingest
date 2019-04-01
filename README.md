@@ -6,26 +6,30 @@ Demo video: [YouTube](https://www.youtube.com/watch?v=FFI9OnW9IuI)
 ![user interface](https://raw.githubusercontent.com/codingchili/ethereum-ingest/master/eth-ingest.jpg)
 
 Tested with
-- ElasticSeach 6.3.1
-- MongoDB 3.4.10
-- Hazelcast 3.8.2
-- geth 1.8.12.
+- ElasticSeach 7.0.0
+- MongoDB 4.0.8
+- Hazelcast 3.10.5
+- geth 1.8.23
 
 ### Building
 Build with
-```
-./gradlew jar
+```console
+# detects the current platform.
+./gradlew build
+
+# to build for a specific platform, 'win', 'mac' or 'linux'.
+./gradlew build -Pplatform=linux
 ```
 Requires chili-core through jitpack or local repo.
 
 ### Importing
 The first step is to start your ethereum IPC client, for geth use:
-```
+```console
 geth --rpcapi personal,db,eth,net,web3 --rpc --testnet
 ```
 
 Start the importer with:
-```
+```console
 java -jar <filename>.jar --import
 java -jar <filename>.jar --gui
 java -jar <filename>.jar --help
@@ -37,7 +41,7 @@ java -jar <filename>.jar --help
 Set configuration in application.json before running --import. WHen using the graphical application the configuration is saved automatically.
 
 Default configuration
-```
+```console
 {
   "startBlock" : "1964770",
   "blockEnd" : "1964900",
@@ -70,7 +74,7 @@ Imports can be executed multiple times over the same block range without resulti
 
 To configure a custom host:port for MongoDB or ElasticSearch please add/edit this file in "conf/system/storage.yaml"
 
-```
+```console
 ---
 storage:
   com.codingchili.core.storage.MongoDBMap:
@@ -78,7 +82,7 @@ storage:
     port: 27017
   com.codingchili.core.storage.ElasticMap:
     host: "localhost"
-    port: 27017
+    port: 9200
 ```
 
 ### Contributing
