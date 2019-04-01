@@ -6,6 +6,7 @@ Demo video: [YouTube](https://www.youtube.com/watch?v=FFI9OnW9IuI)
 ![user interface](https://raw.githubusercontent.com/codingchili/ethereum-ingest/master/eth-ingest.jpg)
 
 Tested with
+- Java 11 (minimim requirement)
 - ElasticSeach 7.0.0
 - MongoDB 4.0.8
 - Hazelcast 3.10.5
